@@ -1,0 +1,4 @@
+   /vendor/
+   /stripe/
+   /cache/
+   .DS_Store
