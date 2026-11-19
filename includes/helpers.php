@@ -334,6 +334,12 @@ function media_class($file)
     return image_is_cutout($file) ? 'media--cutout' : 'media--photo';
 }
 
+/** The repair perk a purchase earns, as shown to customers. */
+function repair_perk_label($price)
+{
+    return (int) $price > FREE_REPAIR_THRESHOLD ? '1 free repair' : '50% off repairs';
+}
+
 /** The small label on the top-left of a product card. */
 function product_badge($product, $isNewest = false)
 {

@@ -32,6 +32,9 @@ define('PRODUCTS_PER_PAGE', 8);
 /** At or below this many in stock, cards say "Only N left". */
 define('LOW_STOCK_THRESHOLD', 10);
 
+/** Most units of one product a customer can order at once (also capped by stock). */
+define('MAX_CART_QUANTITY', 5);
+
 /* Social links ------------------------------------------------------------ */
 
 /**
