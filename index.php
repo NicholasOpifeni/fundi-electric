@@ -1,7 +1,7 @@
 <?php
 /**
- * Home page: hero, new arrivals, story banner, value pills, categories and
- * the full paginated catalogue.
+ * Home page: hero, new arrivals, story banner, value pills, categories,
+ * best sellers and the full paginated catalogue.
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/product-card.php';
@@ -28,6 +28,19 @@ foreach (db_all($conn, 'SELECT product_catag, product_img FROM products ORDER BY
 uasort($categories, function ($a, $b) {
     return $b['total'] - $a['total'];
 });
+
+/* Best sellers: most units sold, or the priciest products until anything has sold. */
+$bestSellers = db_all(
+    $conn,
+    'SELECT p.*, SUM(s.quantity) AS sold
+       FROM soldproducts s JOIN products p ON p.product_id = s.pid
+      GROUP BY p.product_id ORDER BY sold DESC LIMIT 3'
+);
+$hasSales = (bool) $bestSellers;
+if (!$hasSales) {
+    $bestSellers = db_all($conn, 'SELECT * FROM products ORDER BY product_price DESC LIMIT 3');
+}
+$topPick = $bestSellers ? $bestSellers[0] : null;
 
 /* Full catalogue, newest first. Out-of-range page numbers show the nearest real page. */
 $totalRow   = db_one($conn, 'SELECT COUNT(*) AS total FROM products');
@@ -131,6 +144,50 @@ include __DIR__ . '/includes/headerNav.php';
     <?php } ?>
   </div>
 </section>
+
+<!-- Best sellers ========================================================== -->
+<?php if ($topPick) { ?>
+<section class="section bestsellers" id="bestsellers">
+  <div class="bestsellers__intro">
+    <p class="eyebrow"><?php echo $hasSales ? 'Loved by our customers' : 'Editor’s picks'; ?></p>
+    <h2 class="display">Best <em>sellers</em></h2>
+    <p class="muted">The devices people keep coming back for. Anything over <?php echo e(base_money(FREE_REPAIR_THRESHOLD)); ?> also earns a free repair.</p>
+
+    <ol class="rank-list">
+      <?php foreach ($bestSellers as $i => $product) {
+          $thumb = product_image($product['product_img']); ?>
+        <li>
+          <a href="product.php?id=<?php echo (int) $product['product_id']; ?>">
+            <span class="rank-list__num"><?php echo sprintf('%02d', $i + 1); ?></span>
+            <span class="rank-list__thumb <?php echo media_class($product['product_img']); ?>">
+              <?php if ($thumb !== '') { ?><img src="<?php echo e($thumb); ?>" alt="" loading="lazy"><?php } ?>
+            </span>
+            <span class="rank-list__name">
+              <?php echo e(trim($product['product_title'])); ?>
+              <small><?php echo $hasSales ? (int) $product['sold'] . ' sold' : e(ucfirst(product_category($product))); ?></small>
+            </span>
+            <span class="rank-list__price"><?php echo e(base_money($product['product_price'])); ?></span>
+          </a>
+        </li>
+      <?php } ?>
+    </ol>
+  </div>
+
+  <?php $topImage = product_image($topPick['product_img']); ?>
+  <a class="bestsellers__feature" href="product.php?id=<?php echo (int) $topPick['product_id']; ?>">
+    <?php if ($topImage !== '') { ?>
+      <img class="<?php echo media_class($topPick['product_img']); ?>" src="<?php echo e($topImage); ?>" alt="<?php echo e(trim($topPick['product_title'])); ?>" loading="lazy">
+    <?php } else { ?>
+      <span class="media-placeholder"><em><?php echo e(ucfirst(product_category($topPick))); ?></em></span>
+    <?php } ?>
+    <span class="bestsellers__tag glass">
+      <small>No. 1 pick</small>
+      <strong><?php echo e(trim($topPick['product_title'])); ?></strong>
+      <span><?php echo e(base_money($topPick['product_price'])); ?></span>
+    </span>
+  </a>
+</section>
+<?php } ?>
 
 <!-- Full catalogue ======================================================== -->
 <section class="section" id="catalogue">
