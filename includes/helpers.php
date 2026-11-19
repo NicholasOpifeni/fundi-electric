@@ -20,6 +20,11 @@ function post_text($key)
     return isset($_POST[$key]) && is_string($_POST[$key]) ? trim($_POST[$key]) : '';
 }
 
+/** An integer from the query string, or $default when it is missing or not a number. */
+function query_int($key, $default = 0)
+{
+    return isset($_GET[$key]) && is_string($_GET[$key]) && is_numeric($_GET[$key]) ? (int) $_GET[$key] : $default;
+}
 
 /**
  * An icon from the sprite in headerNav.php, e.g. icon('bag'). Icons are
@@ -339,6 +344,22 @@ function product_badge($product, $isNewest = false)
     return ucfirst(product_category($product));
 }
 
+/**
+ * Numbered page links. $url is a function that takes a page number and
+ * returns its link, so each listing keeps its own query string.
+ */
+function pagination_links($page, $totalPages, $url, $label = 'Pages')
+{
+    if ($totalPages <= 1) {
+        return '';
+    }
+    $html = '<nav class="pagination" aria-label="' . e($label) . '">';
+    for ($i = 1; $i <= $totalPages; $i++) {
+        $current = $i === $page ? ' aria-current="page"' : '';
+        $html .= '<a href="' . e($url($i)) . '"' . $current . '>' . $i . '</a>';
+    }
+    return $html . '</nav>';
+}
 
 /* Flash messages ---------------------------------------------------------- */
 
