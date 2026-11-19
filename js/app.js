@@ -93,4 +93,37 @@
     window.addEventListener('resize', update);
     update();
   });
+
+  /* Quantity stepper: − and + change the number, kept within the field's min and max. */
+  document.querySelectorAll('[data-qty]').forEach(function (stepper) {
+    var input = stepper.querySelector('input');
+    var min = parseInt(input.min, 10) || 1;
+    var max = parseInt(input.max, 10) || min;
+
+    function set(value) {
+      input.value = Math.max(min, Math.min(max, value || min));
+    }
+
+    stepper.querySelectorAll('button').forEach(function (button) { button.hidden = false; });
+    stepper.querySelector('[data-qty-dec]').addEventListener('click', function () { set(parseInt(input.value, 10) - 1); });
+    stepper.querySelector('[data-qty-inc]').addEventListener('click', function () { set(parseInt(input.value, 10) + 1); });
+    input.addEventListener('change', function () { set(parseInt(input.value, 10)); });
+  });
+
+  /* Product photo zoom: with a mouse, the photo doubles in size and follows the pointer. */
+  var zoom = document.querySelector('[data-zoom]');
+  if (zoom && window.matchMedia('(hover: hover)').matches) {
+    var zoomImage = zoom.querySelector('img');
+    zoom.addEventListener('mouseenter', function () { zoom.classList.add('is-zoomed'); });
+    zoom.addEventListener('mouseleave', function () {
+      zoom.classList.remove('is-zoomed');
+      zoomImage.style.transformOrigin = '';
+    });
+    zoom.addEventListener('mousemove', function (event) {
+      var box = zoom.getBoundingClientRect();
+      var x = ((event.clientX - box.left) / box.width) * 100;
+      var y = ((event.clientY - box.top) / box.height) * 100;
+      zoomImage.style.transformOrigin = x + '% ' + y + '%';
+    });
+  }
 })();
