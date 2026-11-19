@@ -1,6 +1,7 @@
 <?php
 /**
- * Home page: hero, new arrivals and the full paginated catalogue.
+ * Home page: hero, new arrivals, story banner, value pills and the full
+ * paginated catalogue.
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/product-card.php';
@@ -59,6 +60,29 @@ include __DIR__ . '/includes/headerNav.php';
       <?php foreach ($latest as $i => $product) { render_product_card($product, $i < 2); } ?>
     </div>
     <button class="carousel__btn carousel__btn--next" type="button" aria-label="Next products" data-carousel-next hidden><?php echo icon('arrow'); ?></button>
+  </div>
+</section>
+
+<!-- Story banner ========================================================== -->
+<section class="story">
+  <p class="story__text">
+    We stock <em>electronics</em> you can count on for years to come, through late-night work, weekend <em>gaming</em> and everything in between. Each device is <em>checked, serialised</em> and backed by our own repair desk.
+  </p>
+</section>
+
+<!-- Value pills =========================================================== -->
+<section class="values" aria-label="Why shop with us">
+  <div class="value">
+    <span class="value__icon"><?php echo icon('shield'); ?></span>
+    <p><em>Genuine</em><br>Brands only</p>
+  </div>
+  <div class="value value--round">
+    <span class="value__icon"><?php echo icon('tool'); ?></span>
+    <p><em>Repair</em><br>Perks included</p>
+  </div>
+  <div class="value">
+    <span class="value__icon"><?php echo icon('card'); ?></span>
+    <p><em>Secure</em><br>Stripe checkout</p>
   </div>
 </section>
 
