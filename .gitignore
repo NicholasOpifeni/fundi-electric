@@ -1,4 +1,20 @@
-   /vendor/
-   /stripe/
-   /cache/
-   .DS_Store
+# Stripe keys (copy includes/secrets.example.php to create it)
+/includes/secrets.php
+
+# Exchange-rate cache written at runtime
+/cache/
+
+# Old Stripe SDK folders; payments use Stripe's REST API instead
+/vendor/
+/stripe/
+
+# OS and editor files
+.DS_Store
+*.code-workspace
+
+# Archives, screenshots and reference copies that don't belong in the repo
+*.zip
+Screenshot*
+Screen Shot*
+/fundi-electric 2/
+/fundi-electric-reference/
