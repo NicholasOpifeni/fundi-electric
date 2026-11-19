@@ -1,0 +1,16 @@
+# Apache settings for the storefront.
+
+# Don't list the files in folders that have no index page.
+Options -Indexes
+
+# Browsers only need the pages, css/, js/ and images/. The git history, the
+# database dump, PHP includes and the rate cache are read from disk by PHP and
+# must never be downloadable.
+<If "%{REQUEST_URI} =~ m#/(\.git|database|includes|cache)(/|$)#">
+    Require all denied
+</If>
+
+# Dotfiles such as .gitignore, .htaccess and .DS_Store.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
