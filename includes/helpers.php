@@ -259,6 +259,14 @@ function product_category($product)
     return strtolower(trim((string) $product['product_catag']));
 }
 
+/** Plural label for a category, e.g. "Laptops". "mouse" becomes "Mice", not "Mouses". */
+function category_plural($category)
+{
+    $irregular = array('mouse' => 'mice');
+    $category  = strtolower(trim((string) $category));
+    return ucfirst(isset($irregular[$category]) ? $irregular[$category] : $category . 's');
+}
+
 /**
  * Web path to a product photo, or '' when the file isn't in PRODUCT_IMAGE_DIR
  * yet, so pages can show a placeholder instead of a broken image.

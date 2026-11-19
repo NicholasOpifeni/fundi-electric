@@ -1,13 +1,33 @@
 <?php
 /**
- * Home page: hero, new arrivals, story banner, value pills and the full
- * paginated catalogue.
+ * Home page: hero, new arrivals, story banner, value pills, categories and
+ * the full paginated catalogue.
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/product-card.php';
 
 /* New arrivals: the eight latest products, for the carousel. */
 $latest = db_all($conn, 'SELECT * FROM products ORDER BY product_id DESC LIMIT 8');
+
+/* Categories: product count and a cover photo for each, from a single query. */
+$categories = array();
+foreach (db_all($conn, 'SELECT product_catag, product_img FROM products ORDER BY product_id DESC') as $row) {
+    $name = product_category($row);
+    if (!isset($categories[$name])) {
+        $categories[$name] = array('name' => $name, 'total' => 0, 'img' => '');
+    }
+    $categories[$name]['total']++;
+
+    // Use the newest photo, but prefer one on a plain background: it blends into the coloured tile.
+    $cover = $categories[$name]['img'];
+    if (product_image($row['product_img']) !== ''
+        && ($cover === '' || (!image_is_cutout($cover) && image_is_cutout($row['product_img'])))) {
+        $categories[$name]['img'] = $row['product_img'];
+    }
+}
+uasort($categories, function ($a, $b) {
+    return $b['total'] - $a['total'];
+});
 
 /* Full catalogue, newest first. Out-of-range page numbers show the nearest real page. */
 $totalRow   = db_one($conn, 'SELECT COUNT(*) AS total FROM products');
@@ -83,6 +103,32 @@ include __DIR__ . '/includes/headerNav.php';
   <div class="value">
     <span class="value__icon"><?php echo icon('card'); ?></span>
     <p><em>Secure</em><br>Stripe checkout</p>
+  </div>
+</section>
+
+<!-- Categories ============================================================ -->
+<section class="section" id="categories">
+  <div class="section__head">
+    <h2 class="sec-title">
+      <span>Explore our carefully picked and</span>
+      <span>well-tested <i class="spark" aria-hidden="true">✧</i> <em>Categories</em></span>
+    </h2>
+  </div>
+
+  <div class="categories">
+    <?php $tile = 0; foreach ($categories as $category) { ?>
+      <a class="category category--<?php echo $tile++ % 4; ?>" href="search.php?cat=<?php echo e(urlencode($category['name'])); ?>">
+        <?php if ($category['img'] !== '') { ?>
+          <img class="<?php echo media_class($category['img']); ?>" src="<?php echo e(product_image($category['img'])); ?>" alt="" loading="lazy">
+        <?php } ?>
+        <span class="category__label">
+          <span>Explore</span>
+          <em><?php echo e(category_plural($category['name'])); ?></em>
+          <small><?php echo $category['total']; ?> product<?php echo $category['total'] === 1 ? '' : 's'; ?></small>
+        </span>
+        <span class="btn btn--light btn--sm">Shop <?php echo icon('arrow'); ?></span>
+      </a>
+    <?php } ?>
   </div>
 </section>
 
