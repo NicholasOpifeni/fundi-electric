@@ -20,6 +20,46 @@ function post_text($key)
     return isset($_POST[$key]) && is_string($_POST[$key]) ? trim($_POST[$key]) : '';
 }
 
+/**
+ * An icon from the sprite in headerNav.php, e.g. icon('bag'). Icons are
+ * decorative, so they are hidden from screen readers; buttons that only show
+ * an icon carry their own aria-label.
+ */
+function icon($name)
+{
+    return '<svg class="icon" aria-hidden="true"><use href="#i-' . e($name) . '"/></svg>';
+}
+
+/**
+ * The store name as brand markup: the first word plain and the rest in the
+ * serif italic, so "Fundi Electric" becomes Fundi<em>Electric</em>.
+ */
+function brand_markup($name)
+{
+    $parts = preg_split('/[\s-]+/', trim((string) $name), 2);
+    return e($parts[0]) . (isset($parts[1]) ? '<em>' . e($parts[1]) . '</em>' : '');
+}
+
+/** First letter of a name in capitals, for avatars. Safe for accented names. */
+function name_initial($name)
+{
+    $name = trim((string) $name);
+    if (function_exists('mb_substr')) {
+        return mb_strtoupper(mb_substr($name, 0, 1, 'UTF-8'), 'UTF-8');
+    }
+    return strtoupper(substr($name, 0, 1));
+}
+
+/**
+ * Path to a CSS or JS file with its modification time appended, so browsers
+ * fetch the new version as soon as the file changes instead of a cached copy.
+ */
+function asset_version($path)
+{
+    $file = __DIR__ . '/../' . $path;
+    return $path . (is_file($file) ? '?v=' . filemtime($file) : '');
+}
+
 /* Redirects --------------------------------------------------------------- */
 
 /** Send the browser to $url and stop. Only works before any output. */
@@ -171,6 +211,21 @@ function require_login()
 
     flash('Please log in to continue.', 'info');
     redirect('login.php?next=' . urlencode($page . $query));
+}
+
+/** Number of items in the logged-in customer's cart, for the header badge. */
+function cart_count($conn)
+{
+    if (!current_user_id()) {
+        return 0;
+    }
+    $row = db_one(
+        $conn,
+        "SELECT COALESCE(SUM(quantity), 0) AS total FROM carts WHERE uid = ? AND status = 'active'",
+        'i',
+        array(current_user_id())
+    );
+    return $row ? (int) $row['total'] : 0;
 }
 
 /* Flash messages ---------------------------------------------------------- */
