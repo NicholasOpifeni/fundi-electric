@@ -1,6 +1,6 @@
 <?php
 /**
- * Home page.
+ * Home page: hero and the full paginated catalogue.
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/product-card.php';
@@ -16,16 +16,28 @@ $catalogue  = db_all(
     array(PRODUCTS_PER_PAGE, ($page - 1) * PRODUCTS_PER_PAGE)
 );
 
-$pageTitle = 'Everyday electronics';
+$pageTitle     = 'Everyday electronics';
+$bodyClass     = 'home';
+$overlayHeader = true;
 
 include __DIR__ . '/includes/headerNav.php';
 ?>
 
-<header class="page-head">
-  <p class="eyebrow">Laptops · Phones · Accessories</p>
-  <h1 class="display">Everyday <em>electronics</em></h1>
-  <p class="muted">Genuine devices from brands you trust, with repair perks on every order.</p>
-</header>
+<!-- Hero ================================================================== -->
+<section class="hero">
+  <div class="hero__content">
+    <h1 class="hero__title">Everyday <em>electronics</em> for a smarter home</h1>
+    <p class="hero__lead">Laptops, phones, keyboards and mice from brands you trust. Every order comes with a serial code that unlocks discounted repairs at our service desk.</p>
+    <a class="btn btn--butter" href="#shop">Shop now <?php echo icon('arrow'); ?></a>
+  </div>
+
+  <aside class="hero__stat glass" aria-label="Repair perk">
+    <p>Genuine.<br>Warrantied.<br>Repair-backed.</p>
+    <?php echo icon('shield', 'hero__stat-icon'); ?>
+    <strong>50%</strong>
+    <span>off repairs on every purchase</span>
+  </aside>
+</section>
 
 <!-- Full catalogue ======================================================== -->
 <section class="section" id="catalogue">

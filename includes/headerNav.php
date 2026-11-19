@@ -6,8 +6,9 @@
  *
  * Include it after includes/init.php, once the page has handled its form
  * posts (they redirect, which can't happen after output). A page can set:
- *   $pageTitle  text for the <title>, shown before the store name
- *   $bodyClass  extra class on <body>, e.g. "home"
+ *   $pageTitle      text for the <title>, shown before the store name
+ *   $bodyClass      extra class on <body>, e.g. "home"
+ *   $overlayHeader  true to float a transparent header over the page's hero
  */
 
 /**
@@ -18,6 +19,7 @@
  */
 $documentTitle = isset($pageTitle) ? $pageTitle . ' · ' . $site['name'] : $site['name'];
 $bodyClass     = isset($bodyClass) ? $bodyClass : '';
+$overlay       = !empty($overlayHeader);
 $cartItems     = cart_count($conn);
 $searchTerm    = isset($_GET['q']) && is_string($_GET['q']) ? $_GET['q'] : '';
 $flash         = take_flash();
@@ -93,7 +95,7 @@ $flashType = ($flash && in_array($flash['type'], array('success', 'error', 'info
 <div class="page">
 <div class="frame">
 
-<header class="site-header">
+<header class="site-header<?php echo $overlay ? ' site-header--overlay' : ''; ?>">
   <nav class="site-nav" aria-label="Main">
     <?php foreach ($navLinks as $label => $href) { ?>
       <a href="<?php echo e($href); ?>"<?php echo $href === $currentLink ? ' aria-current="page"' : ''; ?>><?php echo e($label); ?></a>

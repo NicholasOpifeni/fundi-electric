@@ -31,9 +31,10 @@ function query_int($key, $default = 0)
  * decorative, so they are hidden from screen readers; buttons that only show
  * an icon carry their own aria-label.
  */
-function icon($name)
+function icon($name, $class = '')
 {
-    return '<svg class="icon" aria-hidden="true"><use href="#i-' . e($name) . '"/></svg>';
+    $classes = 'icon' . ($class !== '' ? ' ' . $class : '');
+    return '<svg class="' . e($classes) . '" aria-hidden="true"><use href="#i-' . e($name) . '"/></svg>';
 }
 
 /**

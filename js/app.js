@@ -8,13 +8,17 @@
 (function () {
   'use strict';
 
-  /* Mobile menu: show or hide the panel and keep the button in sync. */
+  /*
+   * Mobile menu: show or hide the panel and keep the button in sync. The
+   * header gets "is-open" so the see-through home header can turn solid.
+   */
   var menuToggle = document.querySelector('[data-menu-toggle]');
   var mobileMenu = menuToggle && document.getElementById(menuToggle.getAttribute('aria-controls'));
   if (menuToggle && mobileMenu) {
     menuToggle.addEventListener('click', function () {
       var opening = mobileMenu.hidden;
       mobileMenu.hidden = !opening;
+      menuToggle.closest('.site-header').classList.toggle('is-open', opening);
       menuToggle.setAttribute('aria-expanded', String(opening));
       menuToggle.setAttribute('aria-label', opening ? 'Close menu' : 'Open menu');
       menuToggle.querySelector('use').setAttribute('href', opening ? '#i-close' : '#i-menu');
@@ -52,4 +56,5 @@
       button.parentElement.remove();
     });
   });
+
 })();
