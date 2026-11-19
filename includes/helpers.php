@@ -194,3 +194,39 @@ function take_flash()
     unset($_SESSION['flash']);
     return $flash;
 }
+
+/* CSRF protection --------------------------------------------------------- */
+
+/**
+ * The session's CSRF token, created on first use. Every POST form carries it
+ * and init.php turns away any POST without it, so another website can't make
+ * a logged-in customer's browser add to their cart, change their details or
+ * start a payment.
+ */
+function csrf_token()
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/** Hidden input carrying the token. Print it inside every POST form. */
+function csrf_field()
+{
+    return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
+}
+
+/**
+ * Turn away a POST whose token is missing or wrong. The visitor is sent back
+ * with a message instead of an error page, because the usual cause is a
+ * session that expired while the form was open.
+ */
+function verify_csrf()
+{
+    $sent = post_text('csrf_token');
+    if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $sent)) {
+        flash('Your session expired, so that form was not sent. Please try again.', 'error');
+        redirect(safe_back_url('index.php'));
+    }
+}

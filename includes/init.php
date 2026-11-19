@@ -34,3 +34,8 @@ require_once __DIR__ . '/config.php';
 
 $site     = load_site_settings($conn);
 $customer = load_customer($conn);
+
+// Every POST must carry the session's CSRF token (see csrf_field()).
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf();
+}
