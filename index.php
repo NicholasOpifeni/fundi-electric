@@ -1,9 +1,12 @@
 <?php
 /**
- * Home page: hero and the full paginated catalogue.
+ * Home page: hero, new arrivals and the full paginated catalogue.
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/product-card.php';
+
+/* New arrivals: the eight latest products, for the carousel. */
+$latest = db_all($conn, 'SELECT * FROM products ORDER BY product_id DESC LIMIT 8');
 
 /* Full catalogue, newest first. Out-of-range page numbers show the nearest real page. */
 $totalRow   = db_one($conn, 'SELECT COUNT(*) AS total FROM products');
@@ -37,6 +40,26 @@ include __DIR__ . '/includes/headerNav.php';
     <strong>50%</strong>
     <span>off repairs on every purchase</span>
   </aside>
+</section>
+
+<!-- New arrivals ========================================================== -->
+<section class="section" id="shop">
+  <div class="section__head">
+    <h2 class="sec-title">
+      <span>Fresh from the workshop, just</span>
+      <span>Arrived <i class="spark" aria-hidden="true">✧</i> <em>Products</em></span>
+    </h2>
+    <a class="link-arrow" href="#catalogue">More products <?php echo icon('arrow'); ?></a>
+  </div>
+
+  <?php // The arrow buttons stay hidden until app.js wires them up; the track scrolls either way. ?>
+  <div class="carousel" data-carousel>
+    <button class="carousel__btn carousel__btn--prev" type="button" aria-label="Previous products" data-carousel-prev hidden><?php echo icon('arrow-left'); ?></button>
+    <div class="carousel__track" role="region" aria-label="New arrivals" tabindex="0" data-carousel-track>
+      <?php foreach ($latest as $i => $product) { render_product_card($product, $i < 2); } ?>
+    </div>
+    <button class="carousel__btn carousel__btn--next" type="button" aria-label="Next products" data-carousel-next hidden><?php echo icon('arrow'); ?></button>
+  </div>
 </section>
 
 <!-- Full catalogue ======================================================== -->

@@ -639,6 +639,52 @@ img.media--photo { object-fit: cover; }
   .card__foot .btn { width: 100%; }
 }
 
+/* Carousel ---------------------------------------------------------------- */
+
+/* A scroll-snapping row showing four cards at a time; app.js adds the arrows. */
+.carousel { position: relative; }
+.carousel__track {
+  display: grid;
+  grid-auto-columns: calc((100% - 3 * 12px) / 4);
+  grid-auto-flow: column;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.carousel__track::-webkit-scrollbar { display: none; }
+.carousel__track > * { scroll-snap-align: start; }
+
+.carousel__btn {
+  position: absolute;
+  top: 38%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, .3);
+  cursor: pointer;
+  transition: opacity .2s, background .2s;
+}
+.carousel__btn:hover { background: #fff; }
+.carousel__btn[hidden] { display: none; }
+.carousel__btn:disabled { opacity: 0; pointer-events: none; }
+.carousel__btn--prev { left: 14px; }
+.carousel__btn--next { right: 14px; }
+
+@media (max-width: 960px) {
+  .carousel__track { grid-auto-columns: calc((100% - 2 * 12px) / 3); }
+}
+
+@media (max-width: 720px) {
+  .carousel__track { grid-auto-columns: 72%; }
+  .carousel__btn { display: none; }
+}
+
 /* Pagination -------------------------------------------------------------- */
 
 .pagination { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 32px; }

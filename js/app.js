@@ -57,4 +57,40 @@
     });
   });
 
+  /*
+   * Product carousel: the track is a horizontally scrolling row, so it works
+   * by swipe or keyboard on its own. The arrow buttons step one card at a time
+   * and hide at either end.
+   */
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-carousel]').forEach(function (carousel) {
+    var track = carousel.querySelector('[data-carousel-track]');
+    var prev = carousel.querySelector('[data-carousel-prev]');
+    var next = carousel.querySelector('[data-carousel-next]');
+    if (!track || !prev || !next) { return; }
+
+    function cardWidth() {
+      var first = track.firstElementChild;
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return first ? first.getBoundingClientRect().width + gap : track.clientWidth;
+    }
+
+    function scrollByCards(direction) {
+      track.scrollBy({ left: direction * cardWidth(), behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+
+    function update() {
+      var end = track.scrollWidth - track.clientWidth - 2;
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= end;
+    }
+
+    prev.hidden = false;
+    next.hidden = false;
+    prev.addEventListener('click', function () { scrollByCards(-1); });
+    next.addEventListener('click', function () { scrollByCards(1); });
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
 })();
