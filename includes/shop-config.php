@@ -21,6 +21,17 @@ define('SHIPPING_FEE', 10000);
 /** Products priced above this earn one free repair; cheaper ones earn 50% off. */
 define('FREE_REPAIR_THRESHOLD', 1500000);
 
+/* Catalogue --------------------------------------------------------------- */
+
+/** Folder holding product photos, named as in products.product_img. */
+define('PRODUCT_IMAGE_DIR', 'images/products/');
+
+/** Products per page in the catalogue and search results. */
+define('PRODUCTS_PER_PAGE', 8);
+
+/** At or below this many in stock, cards say "Only N left". */
+define('LOW_STOCK_THRESHOLD', 10);
+
 /* Social links ------------------------------------------------------------ */
 
 /**

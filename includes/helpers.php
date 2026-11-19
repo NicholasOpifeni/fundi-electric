@@ -20,6 +20,7 @@ function post_text($key)
     return isset($_POST[$key]) && is_string($_POST[$key]) ? trim($_POST[$key]) : '';
 }
 
+
 /**
  * An icon from the sprite in headerNav.php, e.g. icon('bag'). Icons are
  * decorative, so they are hidden from screen readers; buttons that only show
@@ -227,6 +228,117 @@ function cart_count($conn)
     );
     return $row ? (int) $row['total'] : 0;
 }
+
+/* Products ---------------------------------------------------------------- */
+
+/** An amount in BASE_CURRENCY for display, e.g. "UGX 4,200,000". */
+function base_money($amount)
+{
+    return BASE_CURRENCY . ' ' . number_format((int) round((float) $amount));
+}
+
+/** Collapse whitespace and cut text to $length characters, ending with "…" if cut. */
+function short_text($text, $length = 90)
+{
+    $clean = trim(preg_replace('/\s+/u', ' ', (string) $text));
+    if (function_exists('mb_strimwidth')) {
+        return mb_strimwidth($clean, 0, $length, '…', 'UTF-8');
+    }
+    return strlen($clean) > $length ? substr($clean, 0, $length - 1) . '…' : $clean;
+}
+
+/** A product's category in lower case, e.g. "laptop". The admin data isn't always tidy. */
+function product_category($product)
+{
+    return strtolower(trim((string) $product['product_catag']));
+}
+
+/**
+ * Web path to a product photo, or '' when the file isn't in PRODUCT_IMAGE_DIR
+ * yet, so pages can show a placeholder instead of a broken image.
+ */
+function product_image($file)
+{
+    $file = basename((string) $file);
+    if ($file === '' || !is_file(__DIR__ . '/../' . PRODUCT_IMAGE_DIR . $file)) {
+        return '';
+    }
+    return PRODUCT_IMAGE_DIR . rawurlencode($file);
+}
+
+/**
+ * Whether a product photo is a cutout (product on a plain white or transparent
+ * background) rather than a full scene. Cutouts are shown whole and blended
+ * into the grey card; scenes fill the frame. The answer is kept in the session
+ * per file and modification time, so each photo is only inspected once.
+ */
+function image_is_cutout($file)
+{
+    $path = __DIR__ . '/../' . PRODUCT_IMAGE_DIR . basename((string) $file);
+    if (!is_file($path)) {
+        return false;
+    }
+
+    $key = basename($path) . ':' . filemtime($path);
+    if (isset($_SESSION['img-cutout'][$key])) {
+        return $_SESSION['img-cutout'][$key];
+    }
+
+    $cutout = true;
+    $img    = function_exists('imagecreatefromstring') ? @imagecreatefromstring((string) file_get_contents($path)) : false;
+    if ($img && imagesx($img) >= 6 && imagesy($img) >= 6) {
+        // Sample the corners and edge midpoints; five of six must be near-white
+        // or transparent. No imagedestroy(): the image is freed when $img goes out
+        // of scope, and the call is deprecated as of PHP 8.5.
+        $w = imagesx($img);
+        $h = imagesy($img);
+        $points = array(
+            array(2, 2), array($w - 3, 2), array(2, $h - 3), array($w - 3, $h - 3),
+            array((int) ($w / 2), 2), array(2, (int) ($h / 2)),
+        );
+        $plain = 0;
+        foreach ($points as $point) {
+            $rgba = imagecolorsforindex($img, imagecolorat($img, $point[0], $point[1]));
+            $isWhite = $rgba['red'] > 225 && $rgba['green'] > 225 && $rgba['blue'] > 225;
+            if ($isWhite || $rgba['alpha'] > 100) {
+                $plain++;
+            }
+        }
+        $cutout = $plain >= 5;
+    }
+
+    $_SESSION['img-cutout'][$key] = $cutout;
+    return $cutout;
+}
+
+/** CSS class for a product image frame: cutout, photo, or empty (placeholder). */
+function media_class($file)
+{
+    if (product_image($file) === '') {
+        return 'media--empty';
+    }
+    return image_is_cutout($file) ? 'media--cutout' : 'media--photo';
+}
+
+/** The small label on the top-left of a product card. */
+function product_badge($product, $isNewest = false)
+{
+    $stock = (int) $product['product_left'];
+    if ($stock <= 0) {
+        return 'Sold out';
+    }
+    if ($isNewest) {
+        return 'New';
+    }
+    if ($stock <= LOW_STOCK_THRESHOLD) {
+        return 'Only ' . $stock . ' left';
+    }
+    if ((int) $product['product_price'] > FREE_REPAIR_THRESHOLD) {
+        return 'Free repair';
+    }
+    return ucfirst(product_category($product));
+}
+
 
 /* Flash messages ---------------------------------------------------------- */
 
