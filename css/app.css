@@ -1,0 +1,166 @@
+/* ==========================================================================
+   Fundi Electric storefront styles
+   Warm stone canvas, deep forest green and butter yellow, with Manrope for
+   interface text and Instrument Serif italics for emphasis.
+
+   Colours, fonts, radii and shadows are tokens on :root; change them there
+   rather than in the component rules below.
+   ========================================================================== */
+
+:root {
+  /* Surfaces */
+  --canvas: #d7d6d0;
+  --paper: #ffffff;
+  --card: #f6f5f1;
+  --cream: #f1f0e3;
+
+  /* Brand */
+  --butter: #fbf3c4;
+  --butter-strong: #f4e79a;
+  --forest: #0d5540;
+  --forest-hover: #0a4535;
+  --forest-deep: #0b3a2e;
+
+  /* Text and lines */
+  --ink: #1a1e1c;
+  --muted: #6d716c;
+  --line: #e5e3db;
+  --line-strong: #d3d1c8;
+
+  /* Feedback */
+  --danger: #b3402f;
+  --danger-line: #e8c3bb;
+  --danger-soft: #f7e4df;
+  --success-soft: #e3efe7;
+
+  --sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 18px 40px -18px rgba(18, 38, 30, .35);
+}
+
+/* Base -------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* The serif italic is the brand's accent: any <em> in a heading or line of copy. */
+em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: 0; }
+
+:focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; border-radius: 6px; }
+
+/* Utilities --------------------------------------------------------------- */
+
+.icon { width: 20px; height: 20px; flex-shrink: 0; }
+.muted { color: var(--muted); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.eyebrow {
+  margin-bottom: 10px;
+  color: var(--forest);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.display {
+  font-size: clamp(44px, 6vw, 80px);
+  font-weight: 500;
+  line-height: .98;
+  letter-spacing: -.035em;
+}
+.display em { font-size: 1.08em; }
+
+/* Buttons ----------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 22px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--forest);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .2s, transform .2s, box-shadow .2s;
+}
+.btn:hover { background: var(--forest-hover); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.btn .icon { width: 16px; height: 16px; }
+
+.btn--sm { height: 34px; padding: 0 14px; gap: 6px; font-size: 13px; }
+.btn--sm .icon { width: 14px; height: 14px; }
+.btn--lg { height: 54px; padding: 0 28px; font-size: 15px; }
+.btn--block { width: 100%; }
+
+.btn--butter { background: var(--butter); color: var(--ink); }
+.btn--butter:hover { background: var(--butter-strong); }
+.btn--light { background: rgba(255, 255, 255, .92); color: var(--ink); }
+.btn--light:hover { background: #fff; }
+.btn--ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn--ghost:hover { background: var(--card); }
+.btn--danger { background: transparent; color: var(--danger); border-color: var(--danger-line); }
+.btn--danger:hover { background: var(--danger-soft); }
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-arrow .icon { width: 16px; height: 16px; }
+
+/* Reduced motion ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
