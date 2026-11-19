@@ -21,6 +21,18 @@ define('SHIPPING_FEE', 10000);
 /** Products priced above this earn one free repair; cheaper ones earn 50% off. */
 define('FREE_REPAIR_THRESHOLD', 1500000);
 
+/* Social links ------------------------------------------------------------ */
+
+/**
+ * Full URLs of the shop's social pages, shown as icons in the footer.
+ * Leave one empty to hide it; the "Follow us" column disappears when all are.
+ */
+$SHOP_SOCIAL = array(
+    'facebook' => '',
+    'x'        => '',
+    'youtube'  => '',
+);
+
 /* Repair pricing ---------------------------------------------------------- */
 
 /**
