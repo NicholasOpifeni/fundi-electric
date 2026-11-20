@@ -14,10 +14,17 @@ function e($value)
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
-/** A trimmed string from $_POST, or '' when the field is missing or not text. */
+/**
+ * A trimmed string from $_POST, or '' when the field is missing or not text.
+ * Bytes that aren't valid UTF-8 can't be stored in the utf8mb4 tables (MySQL
+ * would refuse the insert), so such input counts as empty and fails validation.
+ */
 function post_text($key)
 {
-    return isset($_POST[$key]) && is_string($_POST[$key]) ? trim($_POST[$key]) : '';
+    if (!isset($_POST[$key]) || !is_string($_POST[$key])) {
+        return '';
+    }
+    return preg_match('//u', $_POST[$key]) ? trim($_POST[$key]) : '';
 }
 
 /**
