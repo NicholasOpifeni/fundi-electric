@@ -31,6 +31,24 @@ function search_term()
     return function_exists('mb_substr') ? mb_substr($term, 0, 100, 'UTF-8') : substr($term, 0, 100);
 }
 
+/** Length in characters rather than bytes, so accented names aren't counted double. */
+function text_length($text)
+{
+    return function_exists('mb_strlen') ? mb_strlen((string) $text, 'UTF-8') : strlen((string) $text);
+}
+
+/** Attributes that mark a form field invalid and link it to its error message. */
+function field_attrs($errors, $name)
+{
+    return isset($errors[$name]) ? ' aria-invalid="true" aria-describedby="' . e($name) . '-error"' : '';
+}
+
+/** The error message shown under a form field, if it has one. */
+function field_error($errors, $name)
+{
+    return isset($errors[$name]) ? '<p class="field__error" id="' . e($name) . '-error">' . e($errors[$name]) . '</p>' : '';
+}
+
 /** An integer from the query string, or $default when it is missing or not a number. */
 function query_int($key, $default = 0)
 {
@@ -216,6 +234,34 @@ function load_customer($conn)
         unset($_SESSION['id']);
     }
     return $row;
+}
+
+/**
+ * Start a logged-in session. The session gets a new ID so an ID someone saw
+ * before login is useless afterwards (session fixation), and a new CSRF token.
+ */
+function log_in_customer($customerId)
+{
+    session_regenerate_id(true);
+    $_SESSION['id'] = (int) $customerId;
+    unset($_SESSION['csrf_token']);
+}
+
+/** The page to return to after logging in or signing up: ?next= or the form's hidden field. */
+function requested_next()
+{
+    $value = isset($_POST['next']) ? $_POST['next'] : (isset($_GET['next']) ? $_GET['next'] : '');
+    return safe_local_path($value, '');
+}
+
+/**
+ * A Ugandan phone number in local 10-digit form (0772123456), or '' if the
+ * input isn't one. Spaces, dashes and the +256 / 256 country code are fine.
+ */
+function normalise_phone($input)
+{
+    $digits = preg_replace('/[\s().-]+/', '', (string) $input);
+    return preg_match('/^(?:\+?256|0)(\d{9})$/', $digits, $match) ? '0' . $match[1] : '';
 }
 
 /** Send guests to the login page, and back to this page once they have logged in. */
