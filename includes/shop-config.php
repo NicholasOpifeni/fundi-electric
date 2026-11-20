@@ -35,6 +35,20 @@ define('LOW_STOCK_THRESHOLD', 10);
 /** Most units of one product a customer can order at once (also capped by stock). */
 define('MAX_CART_QUANTITY', 5);
 
+/* Contact details (contact page) ------------------------------------------ */
+
+/**
+ * PLACEHOLDERS: replace with the shop's real details. "map" is what the map on
+ * the contact page searches for, so a street name and area work best.
+ */
+$SHOP_CONTACT = array(
+    'address' => array('Kampala, Uganda'),
+    'map'     => 'Kampala, Uganda',
+    'phone'   => '+256 700 000 000',
+    'email'   => 'hello@fundielectric.com',
+    'hours'   => array('Monday – Saturday, 9:00am – 6:00pm', 'Closed on Sundays and public holidays'),
+);
+
 /* Social links ------------------------------------------------------------ */
 
 /**
