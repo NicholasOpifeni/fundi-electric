@@ -1,6 +1,7 @@
 <?php
 /**
- * The customer's account page.
+ * The customer's account page: details, order history with repair serials,
+ * and repair history.
  *
  * Each details card has its own small form ("section"), so saving the address
  * can't touch the name or email. A rejected change re-opens its card with the
@@ -58,6 +59,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $isAdmin = $customer['customer_role'] === 'admin';
+
+// Each order with the latest repair serial issued for that product to this customer.
+$orders = db_all(
+    $conn,
+    'SELECT s.sid, s.pid, s.quantity, s.price, s.date, s.status, p.product_title, p.product_img,
+            (SELECT ss.uuid FROM servicestatus ss WHERE ss.uid = s.uid AND ss.pid = s.pid ORDER BY ss.sid DESC LIMIT 1) AS serial,
+            (SELECT ss.status FROM servicestatus ss WHERE ss.uid = s.uid AND ss.pid = s.pid ORDER BY ss.sid DESC LIMIT 1) AS serial_status
+       FROM soldproducts s LEFT JOIN products p ON p.product_id = s.pid
+      WHERE s.uid = ?
+      ORDER BY s.sid DESC',
+    'i',
+    array($uid)
+);
+
+$repairs = db_all($conn, 'SELECT * FROM repair WHERE user_id = ? ORDER BY id DESC', 'i', array($uid));
 
 $pageTitle = 'My account';
 include __DIR__ . '/includes/headerNav.php';
@@ -151,6 +167,96 @@ include __DIR__ . '/includes/headerNav.php';
           </details>
         </div>
       </div>
+    </section>
+
+    <section class="account-section" id="orders">
+      <div class="account-section__head">
+        <h2>Order <em>history</em></h2>
+      </div>
+
+      <?php if ($orders) { ?>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th><span class="sr-only">Photo</span></th><th>Product</th><th>Price</th><th>Qty</th>
+                <th>Repair serial</th><th>Date</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($orders as $order) {
+                  $thumb = $order['product_img'] !== null ? product_image($order['product_img']) : ''; ?>
+                <tr>
+                  <td>
+                    <div class="thumb <?php echo $order['product_img'] !== null ? media_class($order['product_img']) : 'media--empty'; ?>">
+                      <?php if ($thumb !== '') { ?><img src="<?php echo e($thumb); ?>" alt=""><?php } ?>
+                    </div>
+                  </td>
+                  <td>
+                    <?php if ($order['product_title'] !== null) { ?>
+                      <a href="product.php?id=<?php echo (int) $order['pid']; ?>"><strong><?php echo e(trim($order['product_title'])); ?></strong></a>
+                    <?php } else { ?>
+                      <strong>Discontinued product</strong>
+                    <?php } ?>
+                  </td>
+                  <td><?php echo e(base_money($order['price'])); ?></td>
+                  <td><?php echo (int) $order['quantity']; ?></td>
+                  <td class="mono">
+                    <?php if ($order['serial'] === null) { ?>
+                      —
+                    <?php } elseif ($order['serial_status'] !== 'pending') { ?>
+                      Used
+                    <?php } else { ?>
+                      <?php echo e($order['serial']); ?>
+                    <?php } ?>
+                  </td>
+                  <td><?php echo e($order['date']); ?></td>
+                  <td><span class="pill pill--<?php echo e($order['status']); ?>"><?php echo e(ucfirst($order['status'])); ?></span></td>
+                </tr>
+              <?php } ?>
+            </tbody>
+          </table>
+        </div>
+      <?php } else { ?>
+        <div class="empty">No orders yet. <a class="link-arrow" href="index.php#shop">Start shopping <?php echo icon('arrow'); ?></a></div>
+      <?php } ?>
+    </section>
+
+    <section class="account-section" id="repairs">
+      <div class="account-section__head">
+        <h2>Repair <em>history</em></h2>
+        <a class="link-arrow" href="repair.php">Book a repair <?php echo icon('arrow'); ?></a>
+      </div>
+
+      <?php if ($repairs) { ?>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Device</th><th>Category</th><th>Issue</th><th>Advance</th><th>Serial</th>
+                <th>Still due</th><th>Booked</th><th>Status</th><th>Ready</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($repairs as $repair) { ?>
+                <tr>
+                  <td><strong><?php echo e($repair['p_name']); ?></strong></td>
+                  <td><?php echo e(ucfirst($repair['category'])); ?></td>
+                  <td><?php echo e(ucfirst($repair['damage_type'])); ?></td>
+                  <td><?php echo e(base_money($repair['advance_amt'])); ?></td>
+                  <td class="mono"><?php echo $repair['uuid'] ? e($repair['uuid']) : '—'; ?></td>
+                  <td><?php echo $repair['due'] !== null ? e(base_money($repair['due'])) : '—'; ?></td>
+                  <td><?php echo e($repair['booked_date']); ?></td>
+                  <td><span class="pill pill--<?php echo e($repair['status']); ?>"><?php echo e(ucfirst($repair['status'])); ?></span></td>
+                  <td><?php echo $repair['return_date'] ? e($repair['return_date']) : '—'; ?></td>
+                </tr>
+              <?php } ?>
+            </tbody>
+          </table>
+        </div>
+      <?php } else { ?>
+        <div class="empty">No repair requests yet.</div>
+      <?php } ?>
     </section>
   </div>
 </div>

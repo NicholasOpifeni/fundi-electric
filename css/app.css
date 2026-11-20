@@ -1285,6 +1285,40 @@ img.media--photo { object-fit: cover; }
   .detail-grid { grid-template-columns: 1fr; }
 }
 
+/* Order and repair tables ------------------------------------------------- */
+
+/* Wide tables scroll sideways inside their frame on small screens. */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+.table { width: 100%; border-collapse: collapse; background: #fff; font-size: 14px; }
+.table th {
+  padding: 12px 16px;
+  background: var(--card);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.table td { padding: 12px 16px; border-top: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+.table a:hover { text-decoration: underline; }
+.table .thumb {
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #c9c8c2, #e3e2dc);
+}
+.table .thumb img { width: 100%; height: 100%; }
+.table .thumb.media--cutout img { padding: 5px; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; white-space: nowrap; }
+
+/* Order and repair status. */
+.pill--pending { background: var(--butter); color: #6a5a12; }
+.pill--delivered,
+.pill--repaired { background: var(--success-soft); color: var(--forest); }
+
 /* Pagination -------------------------------------------------------------- */
 
 .pagination { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 32px; }
