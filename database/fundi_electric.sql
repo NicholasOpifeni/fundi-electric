@@ -48,9 +48,11 @@ CREATE TABLE `customer` (
   UNIQUE KEY `customer_email` (`customer_email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- One starter account for development. Change the password after your first login.
+-- One starter account for development: owner@fundielectric.test with the
+-- password "changeme", stored as a password_hash() bcrypt hash. Change the
+-- password after your first login.
 INSERT INTO `customer` (`customer_id`, `customer_fname`, `customer_email`, `customer_pwd`, `customer_phone`, `customer_address`, `customer_role`) VALUES
-(1, 'Store owner', 'owner@fundielectric.test', 'changeme', '0700000000', 'Kampala', 'admin');
+(1, 'Store owner', 'owner@fundielectric.test', '$2y$10$4ZB4ICFSQcwXxaXuQ4jsiOMUvR/qZKQPn3kVQdv2nUUrM7dmxqkRG', '0700000000', 'Kampala', 'admin');
 
 -- Items a customer has put in their cart but not paid for yet.
 CREATE TABLE `carts` (
