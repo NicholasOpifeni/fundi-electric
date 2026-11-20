@@ -1214,6 +1214,77 @@ img.media--photo { object-fit: cover; }
   .auth__form { padding: 32px 8px; }
 }
 
+/* Account page ------------------------------------------------------------ */
+
+.account { display: grid; grid-template-columns: 300px 1fr; align-items: start; gap: 28px; padding: 0 8px; }
+.account > * { min-width: 0; }
+
+.account-card { text-align: center; }
+.account-card h2 { font-size: 22px; }
+.account-card p { margin-top: 4px; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.account-card .pill { margin-top: 12px; }
+.account-card .summary-actions { margin-top: 24px; }
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--forest-deep);
+  color: var(--butter);
+  font-family: var(--serif);
+  font-size: 44px;
+  font-style: italic;
+}
+
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--cream);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pill--admin { background: var(--forest); color: #fff; }
+
+.account-section + .account-section { margin-top: 36px; }
+.account-section__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.account-section__head h2 { font-size: 22px; font-weight: 600; }
+.account-section__head h2 em { font-size: 1.15em; }
+
+/* Details cards: each shows a saved value and opens a small edit form. */
+.detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); align-items: start; gap: 12px; }
+.detail { padding: 20px; border-radius: var(--radius); background: var(--card); }
+.detail h3 { color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.detail p { margin-top: 10px; font-weight: 600; overflow-wrap: anywhere; }
+.detail p + p { margin-top: 2px; color: var(--muted); font-weight: 500; }
+.detail details { margin-top: 14px; }
+.detail summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--forest);
+  font-size: 13px;
+  font-weight: 700;
+  list-style: none;
+  cursor: pointer;
+}
+.detail summary::-webkit-details-marker { display: none; }
+.detail summary .icon { width: 15px; height: 15px; }
+.detail form { margin-top: 12px; }
+.detail .field input { height: 44px; font-size: 14px; }
+
+@media (max-width: 960px) {
+  .account { grid-template-columns: 1fr; }
+  .detail-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 720px) {
+  .detail-grid { grid-template-columns: 1fr; }
+}
+
 /* Pagination -------------------------------------------------------------- */
 
 .pagination { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 32px; }
