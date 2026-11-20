@@ -1255,7 +1255,7 @@ img.media--photo { object-fit: cover; }
 .account-section__head h2 em { font-size: 1.15em; }
 
 /* Details cards: each shows a saved value and opens a small edit form. */
-.detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); align-items: start; gap: 12px; }
+.detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); align-items: start; gap: 12px; }
 .detail { padding: 20px; border-radius: var(--radius); background: var(--card); }
 .detail h3 { color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .detail p { margin-top: 10px; font-weight: 600; overflow-wrap: anywhere; }
@@ -1278,7 +1278,6 @@ img.media--photo { object-fit: cover; }
 
 @media (max-width: 960px) {
   .account { grid-template-columns: 1fr; }
-  .detail-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 720px) {

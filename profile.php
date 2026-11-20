@@ -47,12 +47,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$errors) {
             db_exec($conn, 'UPDATE customer SET customer_phone = ? WHERE customer_id = ?', 'si', array(normalise_phone($form['phone']), $uid));
         }
+    } elseif ($section === 'password') {
+        $current = isset($_POST['current_password']) && is_string($_POST['current_password']) ? $_POST['current_password'] : '';
+        $new     = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
+        $repeat  = isset($_POST['password_repeat']) && is_string($_POST['password_repeat']) ? $_POST['password_repeat'] : '';
+        $stored  = db_one($conn, 'SELECT customer_pwd FROM customer WHERE customer_id = ?', 'i', array($uid));
+
+        if (!password_verify($current, (string) $stored['customer_pwd'])) {
+            $errors = array('current_password' => 'That isn’t your current password.');
+        } else {
+            $errors = new_password_errors($new, $repeat);
+        }
+        if (!$errors) {
+            db_exec($conn, 'UPDATE customer SET customer_pwd = ? WHERE customer_id = ?', 'si', array(password_hash($new, PASSWORD_DEFAULT), $uid));
+            // As at login, give this browser a fresh session ID once the password changes.
+            session_regenerate_id(true);
+        }
     } else {
         redirect('profile.php');
     }
 
     if (!$errors) {
-        flash('Your details were saved.');
+        flash($section === 'password' ? 'Your password was changed.' : 'Your details were saved.');
         redirect('profile.php#details');
     }
     $open = $section;
@@ -163,6 +179,34 @@ include __DIR__ . '/includes/headerNav.php';
                 <?php echo field_error($errors, 'phone'); ?>
               </div>
               <button class="btn btn--sm" type="submit">Save</button>
+            </form>
+          </details>
+        </div>
+
+        <div class="detail">
+          <h3>Password</h3>
+          <p><span aria-hidden="true">••••••••</span><span class="sr-only">Hidden</span></p>
+          <details<?php echo $open === 'password' ? ' open' : ''; ?>>
+            <summary><?php echo icon('edit'); ?> Change</summary>
+            <form class="form" action="profile.php#details" method="post" novalidate>
+              <?php echo csrf_field(); ?>
+              <input type="hidden" name="section" value="password">
+              <div class="field">
+                <label for="current_password">Current password</label>
+                <input type="password" id="current_password" name="current_password" autocomplete="current-password" required<?php echo field_attrs($errors, 'current_password'); ?>>
+                <?php echo field_error($errors, 'current_password'); ?>
+              </div>
+              <div class="field">
+                <label for="password">New password</label>
+                <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required<?php echo field_attrs($errors, 'password'); ?>>
+                <?php echo isset($errors['password']) ? field_error($errors, 'password') : '<p class="hint">At least 8 characters.</p>'; ?>
+              </div>
+              <div class="field">
+                <label for="password_repeat">Repeat new password</label>
+                <input type="password" id="password_repeat" name="password_repeat" autocomplete="new-password" required<?php echo field_attrs($errors, 'password_repeat'); ?>>
+                <?php echo field_error($errors, 'password_repeat'); ?>
+              </div>
+              <button class="btn btn--sm" type="submit">Change password</button>
             </form>
           </details>
         </div>
