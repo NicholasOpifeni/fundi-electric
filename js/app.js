@@ -50,6 +50,42 @@
     });
   });
 
+  /*
+   * Voice search: the mic button fills the search box from speech and submits
+   * the search. The button stays hidden in browsers without speech recognition.
+   */
+  var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (Recognition) {
+    document.querySelectorAll('[data-voice-search]').forEach(function (button) {
+      var form = button.form;
+      var input = form.querySelector('input[name="q"]');
+      button.hidden = false;
+
+      button.addEventListener('click', function () {
+        var recognition = new Recognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        function stopListening() {
+          button.classList.remove('is-listening');
+          button.setAttribute('aria-pressed', 'false');
+        }
+
+        recognition.onresult = function (event) {
+          input.value = event.results[0][0].transcript;
+          form.submit();
+        };
+        recognition.onend = stopListening;
+        recognition.onerror = stopListening;
+
+        button.classList.add('is-listening');
+        button.setAttribute('aria-pressed', 'true');
+        recognition.start();
+      });
+    });
+  }
+
   /* Selects marked data-autosubmit send their form as soon as they change (cart quantities). */
   document.querySelectorAll('[data-autosubmit]').forEach(function (field) {
     field.addEventListener('change', function () {

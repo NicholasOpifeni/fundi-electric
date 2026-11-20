@@ -108,6 +108,8 @@ $flashType = ($flash && in_array($flash['type'], array('success', 'error', 'info
     <form class="search-pill" action="search.php" method="get" role="search">
       <?php echo icon('search'); ?>
       <input type="search" name="q" placeholder="Search products…" value="<?php echo e($searchTerm); ?>" aria-label="Search products">
+      <?php // Shown by app.js only in browsers that support speech recognition. ?>
+      <button type="button" class="mic-btn" aria-label="Search by voice" title="Search by voice" data-voice-search hidden><?php echo icon('mic'); ?></button>
     </form>
 
     <a class="icon-btn" href="cart.php" aria-label="Cart, <?php echo $cartItems; ?> item<?php echo $cartItems === 1 ? '' : 's'; ?>">
