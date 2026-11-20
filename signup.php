@@ -25,41 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $repeat   = isset($_POST['password_repeat']) && is_string($_POST['password_repeat']) ? $_POST['password_repeat'] : '';
     $phone    = normalise_phone($values['phone']);
 
-    if ($values['name'] === '') {
-        $errors['name'] = 'Enter your name.';
-    } elseif (text_length($values['name']) > 50) {
-        $errors['name'] = 'Keep your name under 50 characters.';
-    }
-
-    if ($values['email'] === '') {
-        $errors['email'] = 'Enter your email address.';
-    } elseif (!filter_var($values['email'], FILTER_VALIDATE_EMAIL) || strlen($values['email']) > 100) {
-        $errors['email'] = 'Enter a valid email address, like name@example.com.';
-    } elseif (db_one($conn, 'SELECT customer_id FROM customer WHERE customer_email = ?', 's', array($values['email']))) {
-        $errors['email'] = 'An account with this email already exists. Log in instead.';
-    }
-
-    if ($values['phone'] === '') {
-        $errors['phone'] = 'Enter your phone number.';
-    } elseif ($phone === '') {
-        $errors['phone'] = 'Enter a Ugandan number, like 0772 123 456 or +256 772 123 456.';
-    }
-
-    if ($values['address'] === '') {
-        $errors['address'] = 'Enter the address we should deliver to.';
-    } elseif (text_length($values['address']) > 255) {
-        $errors['address'] = 'Keep the address under 255 characters.';
-    }
-
-    // bcrypt only reads the first 72 bytes, so longer passwords are refused
-    // rather than silently shortened.
-    if (strlen($password) < 8) {
-        $errors['password'] = 'Use at least 8 characters.';
-    } elseif (strlen($password) > 72) {
-        $errors['password'] = 'Use 72 characters or fewer.';
-    } elseif ($repeat !== $password) {
-        $errors['password_repeat'] = 'The two passwords don’t match.';
-    }
+    $errors = array_filter(array(
+        'name'    => name_error($values['name']),
+        'email'   => email_error($conn, $values['email']),
+        'phone'   => phone_error($values['phone']),
+        'address' => address_error($values['address']),
+    )) + new_password_errors($password, $repeat);
 
     if (!$errors) {
         db_exec(

@@ -264,6 +264,69 @@ function normalise_phone($input)
     return preg_match('/^(?:\+?256|0)(\d{9})$/', $digits, $match) ? '0' . $match[1] : '';
 }
 
+/*
+ * Account field checks. Each returns a message for the customer, or '' when
+ * the value is fine. Sign-up and the profile page share them so the rules match.
+ */
+
+function name_error($name)
+{
+    if ($name === '') {
+        return 'Enter your name.';
+    }
+    return text_length($name) > 50 ? 'Keep your name under 50 characters.' : '';
+}
+
+/** $exceptId lets customers keep their own address when editing their profile. */
+function email_error($conn, $email, $exceptId = 0)
+{
+    if ($email === '') {
+        return 'Enter your email address.';
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 100) {
+        return 'Enter a valid email address, like name@example.com.';
+    }
+    $taken = db_one(
+        $conn,
+        'SELECT customer_id FROM customer WHERE customer_email = ? AND customer_id <> ?',
+        'si',
+        array($email, (int) $exceptId)
+    );
+    return $taken ? 'An account already uses this email.' : '';
+}
+
+function phone_error($phone)
+{
+    if ($phone === '') {
+        return 'Enter your phone number.';
+    }
+    return normalise_phone($phone) === '' ? 'Enter a Ugandan number, like 0772 123 456 or +256 772 123 456.' : '';
+}
+
+function address_error($address)
+{
+    if ($address === '') {
+        return 'Enter the address we should deliver to.';
+    }
+    return text_length($address) > 255 ? 'Keep the address under 255 characters.' : '';
+}
+
+/**
+ * Problems with a new password, keyed by field ('password', 'password_repeat').
+ * bcrypt only reads the first 72 bytes, so longer passwords are refused rather
+ * than silently shortened.
+ */
+function new_password_errors($password, $repeat)
+{
+    if (strlen($password) < 8) {
+        return array('password' => 'Use at least 8 characters.');
+    }
+    if (strlen($password) > 72) {
+        return array('password' => 'Use 72 characters or fewer.');
+    }
+    return $repeat !== $password ? array('password_repeat' => 'The two passwords don’t match.') : array();
+}
+
 /** Send guests to the login page, and back to this page once they have logged in. */
 function require_login()
 {
