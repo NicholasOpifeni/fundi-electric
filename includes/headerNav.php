@@ -21,7 +21,7 @@ $documentTitle = isset($pageTitle) ? $pageTitle . ' · ' . $site['name'] : $site
 $bodyClass     = isset($bodyClass) ? $bodyClass : '';
 $overlay       = !empty($overlayHeader);
 $cartItems     = cart_count($conn);
-$searchTerm    = isset($_GET['q']) && is_string($_GET['q']) ? $_GET['q'] : '';
+$searchTerm    = search_term();
 $flash         = take_flash();
 
 $navLinks = array(

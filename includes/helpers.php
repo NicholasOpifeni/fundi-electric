@@ -20,6 +20,17 @@ function post_text($key)
     return isset($_POST[$key]) && is_string($_POST[$key]) ? trim($_POST[$key]) : '';
 }
 
+/**
+ * The search text from ?q=, with runs of spaces collapsed and cut to 100
+ * characters. Invalid UTF-8 comes back as ''.
+ */
+function search_term()
+{
+    $term = isset($_GET['q']) && is_string($_GET['q']) ? (string) preg_replace('/\s+/u', ' ', $_GET['q']) : '';
+    $term = trim($term);
+    return function_exists('mb_substr') ? mb_substr($term, 0, 100, 'UTF-8') : substr($term, 0, 100);
+}
+
 /** An integer from the query string, or $default when it is missing or not a number. */
 function query_int($key, $default = 0)
 {
