@@ -35,8 +35,8 @@ $price    = (int) $product['product_price'];
 $stock    = (int) $product['product_left'];
 $image    = product_image($product['product_img']);
 
-// The quantity picker never offers more than is in stock.
-$maxQuantity = max(1, min(MAX_CART_QUANTITY, $stock));
+// The quantity picker never offers more than a cart line may hold.
+$maxQuantity = max(1, cart_line_limit($stock));
 
 $related = db_all(
     $conn,

@@ -340,6 +340,24 @@ function repair_perk_label($price)
     return (int) $price > FREE_REPAIR_THRESHOLD ? '1 free repair' : '50% off repairs';
 }
 
+/**
+ * Most units of a product one cart line may hold: MAX_CART_QUANTITY, or fewer
+ * when fewer are in stock. 0 means the product is sold out.
+ */
+function cart_line_limit($stock)
+{
+    return max(0, min(MAX_CART_QUANTITY, (int) $stock));
+}
+
+/** Explains to the customer why a cart quantity was capped at $limit. */
+function cart_limit_message($title, $limit)
+{
+    if ($limit < MAX_CART_QUANTITY) {
+        return 'We only have ' . $limit . ' of ' . $title . ' in stock, so your cart holds ' . $limit . '.';
+    }
+    return 'You can order up to ' . $limit . ' of ' . $title . ' at a time, so your cart holds ' . $limit . '.';
+}
+
 /** The small label on the top-left of a product card. */
 function product_badge($product, $isNewest = false)
 {

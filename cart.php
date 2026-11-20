@@ -5,6 +5,7 @@
  *
  * Prices come from the products table rather than carts.price (the price
  * when the item was added), so the cart always shows what checkout charges.
+ * Quantities never exceed what is in stock (see cart_line_limit()).
  */
 require_once __DIR__ . '/includes/init.php';
 require_login();
@@ -19,13 +20,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         db_exec($conn, "DELETE FROM carts WHERE sid = ? AND uid = ? AND status = 'active'", 'ii', array($sid, $uid));
         flash('Item removed from your cart.');
     } elseif ($action === 'update') {
-        $quantity = max(1, min(MAX_CART_QUANTITY, (int) post_text('quantity')));
-        db_exec(
+        $line = db_one(
             $conn,
-            "UPDATE carts SET quantity = ? WHERE sid = ? AND uid = ? AND status = 'active'",
-            'iii',
-            array($quantity, $sid, $uid)
+            "SELECT p.product_title, p.product_left
+               FROM carts c JOIN products p ON p.product_id = c.pid
+              WHERE c.sid = ? AND c.uid = ? AND c.status = 'active'",
+            'ii',
+            array($sid, $uid)
         );
+        $limit = $line ? cart_line_limit($line['product_left']) : 0;
+        if ($limit > 0) {
+            $wanted   = max(1, (int) post_text('quantity'));
+            $quantity = min($limit, $wanted);
+            db_exec($conn, 'UPDATE carts SET quantity = ? WHERE sid = ? AND uid = ?', 'iii', array($quantity, $sid, $uid));
+            if ($quantity < $wanted) {
+                flash(cart_limit_message(trim($line['product_title']), $limit), 'info');
+            }
+        }
     }
     redirect('cart.php');
 }
@@ -33,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $lines = db_all(
     $conn,
     "SELECT c.sid, c.pid, c.product, c.quantity,
-            p.product_title, p.product_price, p.product_img, p.product_catag
+            p.product_title, p.product_price, p.product_img, p.product_catag, p.product_left
        FROM carts c LEFT JOIN products p ON p.product_id = c.pid
       WHERE c.uid = ? AND c.status = 'active'
       ORDER BY c.sid DESC",
@@ -41,13 +52,28 @@ $lines = db_all(
     array($uid)
 );
 
-// A line whose product was deleted from the shop can't be bought; it stays
+// Stock may have dropped since something was added. Lower those lines to what
+// is left, tell the customer, and reload so the page shows the new amounts.
+$lowered = array();
+foreach ($lines as $line) {
+    $limit = $line['product_price'] !== null ? cart_line_limit($line['product_left']) : 0;
+    if ($limit > 0 && (int) $line['quantity'] > $limit) {
+        db_exec($conn, 'UPDATE carts SET quantity = ? WHERE sid = ?', 'ii', array($limit, (int) $line['sid']));
+        $lowered[] = cart_limit_message(trim($line['product_title']), $limit);
+    }
+}
+if ($lowered) {
+    flash(implode(' ', $lowered), 'info');
+    redirect('cart.php');
+}
+
+// A line whose product was deleted or has sold out can't be bought; it stays
 // visible so the customer can remove it, but it blocks checkout until then.
 $subtotal    = 0;
 $itemCount   = 0;
 $blocked     = false;
 foreach ($lines as $line) {
-    if ($line['product_price'] === null) {
+    if ($line['product_price'] === null || cart_line_limit($line['product_left']) === 0) {
         $blocked = true;
         continue;
     }
@@ -79,6 +105,8 @@ include __DIR__ . '/includes/headerNav.php';
     <?php foreach ($lines as $line) {
         $sid       = (int) $line['sid'];
         $available = $line['product_price'] !== null;
+        $limit     = $available ? cart_line_limit($line['product_left']) : 0;
+        $buyable   = $limit > 0;
         $name      = trim($available ? $line['product_title'] : $line['product']);
         $link      = 'product.php?id=' . (int) $line['pid'];
         $thumb     = $available ? product_image($line['product_img']) : '';
@@ -90,7 +118,7 @@ include __DIR__ . '/includes/headerNav.php';
 
         <div>
           <p class="line-item__name"><a href="<?php echo e($link); ?>"><?php echo e($name); ?></a></p>
-          <?php if ($available) { ?>
+          <?php if ($buyable) { ?>
             <p class="line-item__sub"><?php echo e(ucfirst(product_category($line))); ?> · <?php echo e(base_money($line['product_price'])); ?> each</p>
             <form class="qty-form" method="post" action="cart.php">
               <?php echo csrf_field(); ?>
@@ -98,18 +126,20 @@ include __DIR__ . '/includes/headerNav.php';
               <input type="hidden" name="action" value="update">
               <label class="line-item__sub" for="qty-<?php echo $sid; ?>">Qty</label>
               <select class="qty-select" id="qty-<?php echo $sid; ?>" name="quantity" data-autosubmit>
-                <?php for ($q = 1; $q <= MAX_CART_QUANTITY; $q++) { ?>
+                <?php for ($q = 1; $q <= $limit; $q++) { ?>
                   <option value="<?php echo $q; ?>"<?php echo $q === (int) $line['quantity'] ? ' selected' : ''; ?>><?php echo $q; ?></option>
                 <?php } ?>
               </select>
               <noscript><button class="btn btn--sm btn--ghost" type="submit">Update</button></noscript>
             </form>
+          <?php } elseif ($available) { ?>
+            <p class="line-item__warn">Sold out. Remove it to check out.</p>
           <?php } else { ?>
             <p class="line-item__warn">No longer sold. Remove it to check out.</p>
           <?php } ?>
         </div>
 
-        <p class="line-item__total"><?php echo $available ? e(base_money((int) $line['product_price'] * (int) $line['quantity'])) : '—'; ?></p>
+        <p class="line-item__total"><?php echo $buyable ? e(base_money((int) $line['product_price'] * (int) $line['quantity'])) : '—'; ?></p>
 
         <form method="post" action="cart.php">
           <?php echo csrf_field(); ?>
