@@ -50,6 +50,13 @@
     });
   });
 
+  /* Selects marked data-autosubmit send their form as soon as they change (cart quantities). */
+  document.querySelectorAll('[data-autosubmit]').forEach(function (field) {
+    field.addEventListener('change', function () {
+      field.form.submit();
+    });
+  });
+
   /* Flash messages: the close button removes the message. */
   document.querySelectorAll('[data-dismiss]').forEach(function (button) {
     button.addEventListener('click', function () {
