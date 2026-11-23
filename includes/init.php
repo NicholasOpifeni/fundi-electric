@@ -13,6 +13,7 @@
  */
 require_once __DIR__ . '/shop-config.php';
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/currency.php';
 
 date_default_timezone_set(SHOP_TIMEZONE);
 

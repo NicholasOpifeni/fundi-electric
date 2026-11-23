@@ -21,6 +21,18 @@ define('SHIPPING_FEE', 10000);
 /** Products priced above this earn one free repair; cheaper ones earn 50% off. */
 define('FREE_REPAIR_THRESHOLD', 1500000);
 
+/* Visitor currency (see includes/currency.php) ---------------------------- */
+
+/** Free exchange-rate API (no key), refreshed at most every 12 hours. */
+define('RATES_API_URL', 'https://open.er-api.com/v6/latest/' . BASE_CURRENCY);
+define('RATES_CACHE_SECONDS', 12 * 3600);
+
+/** Free IP-to-country lookup, used once per visit; {ip} is replaced. */
+define('GEO_API_URL', 'https://ipwho.is/{ip}?fields=success,country_code');
+
+/** Currencies offered in the footer switcher (the visitor's own is always added). */
+$SWITCHER_CURRENCIES = array('UGX', 'KES', 'TZS', 'RWF', 'USD', 'EUR', 'GBP');
+
 /* Catalogue --------------------------------------------------------------- */
 
 /** Folder holding product photos, named as in products.product_img. */
