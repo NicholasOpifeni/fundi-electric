@@ -1157,6 +1157,41 @@ img.media--photo { object-fit: cover; }
   .quote__amount { font-size: 52px; }
 }
 
+/* Payment confirmation ---------------------------------------------------- */
+
+.confirm { display: grid; justify-items: center; padding: 72px 8px 24px; text-align: center; }
+.confirm__icon {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  margin-bottom: 28px;
+  border-radius: 50%;
+  background: var(--butter);
+  color: var(--forest);
+}
+.confirm__icon .icon { width: 44px; height: 44px; }
+.confirm__icon--waiting { background: var(--cream); }
+.confirm > .muted { max-width: 520px; margin: 16px auto 28px; }
+.confirm__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 28px; }
+
+/* Receipt: what was paid for, with the repair serials each item came with. */
+.receipt { width: 100%; max-width: 640px; text-align: left; }
+.receipt__line + .receipt__line { border-top: 1px solid var(--line); }
+.receipt__serials { margin: -4px 0 10px; color: var(--muted); font-size: 13px; }
+.serial {
+  display: inline-block;
+  margin: 4px 2px 0 0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .confirm { padding-top: 48px; }
+}
+
 /* Search ------------------------------------------------------------------ */
 
 /* Category filter chips above the results. */
