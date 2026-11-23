@@ -28,6 +28,17 @@ $currencyOptions  = array_values(array_filter(
     array_unique(array_merge(array(BASE_CURRENCY, $detectedCurrency), $SWITCHER_CURRENCIES)),
     'currency_supported'
 ));
+
+// How fresh the rates are, so visitors can judge converted prices.
+$ratesUpdated = exchange_rates_updated();
+if ($ratesUpdated > 0) {
+    $ratesNote = 'Exchange rates updated ' . date('j M Y, H:i T', $ratesUpdated);
+    if (time() - $ratesUpdated > 3 * 24 * 3600) {
+        $ratesNote .= ' (may be out of date)';
+    }
+} else {
+    $ratesNote = 'Exchange rates are unavailable right now, so prices are in ' . BASE_CURRENCY . '.';
+}
 ?>
 </main>
 
@@ -77,18 +88,21 @@ $currencyOptions  = array_values(array_filter(
   <div class="site-footer__bottom">
     <p><?php echo e($footerNote); ?></p>
 
-    <?php if (count($currencyOptions) > 1) { ?>
-      <form class="currency-switch" action="set-currency.php" method="get">
-        <label for="currency">Prices in</label>
-        <select id="currency" name="currency" data-autosubmit>
-          <option value="auto"<?php echo $chosenCurrency === null ? ' selected' : ''; ?>>Automatic (<?php echo e($detectedCurrency); ?>)</option>
-          <?php foreach ($currencyOptions as $code) { ?>
-            <option value="<?php echo e($code); ?>"<?php echo $code === $chosenCurrency ? ' selected' : ''; ?>><?php echo e($code); ?></option>
-          <?php } ?>
-        </select>
-        <noscript><button type="submit">Set</button></noscript>
-      </form>
-    <?php } ?>
+    <div class="currency">
+      <?php if (count($currencyOptions) > 1) { ?>
+        <form class="currency-switch" action="set-currency.php" method="get">
+          <label for="currency">Prices in</label>
+          <select id="currency" name="currency" data-autosubmit>
+            <option value="auto"<?php echo $chosenCurrency === null ? ' selected' : ''; ?>>Automatic (<?php echo e($detectedCurrency); ?>)</option>
+            <?php foreach ($currencyOptions as $code) { ?>
+              <option value="<?php echo e($code); ?>"<?php echo $code === $chosenCurrency ? ' selected' : ''; ?>><?php echo e($code); ?></option>
+            <?php } ?>
+          </select>
+          <noscript><button type="submit">Set</button></noscript>
+        </form>
+      <?php } ?>
+      <p class="currency__note"><?php echo e($ratesNote); ?></p>
+    </div>
 
     <p class="site-footer__secure"><?php echo icon('card'); ?> Payments secured by Stripe</p>
   </div>

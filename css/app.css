@@ -1428,7 +1428,9 @@ img.media--photo { object-fit: cover; }
 .site-footer__secure { display: flex; align-items: center; gap: 8px; }
 .site-footer__secure .icon { width: 16px; height: 16px; }
 
-/* "Prices in" currency switcher. */
+/* "Prices in" currency switcher, with how fresh the rates are underneath. */
+.currency { display: grid; justify-items: center; gap: 6px; }
+.currency__note { font-size: 11px; opacity: .85; }
 .currency-switch { display: flex; align-items: center; gap: 8px; }
 .currency-switch select {
   height: 32px;
@@ -1459,6 +1461,7 @@ img.media--photo { object-fit: cover; }
 
 @media (max-width: 720px) {
   .site-footer { margin-top: 48px; padding: 36px 22px 20px; }
+  .currency { justify-items: start; }
   .site-footer__top { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
 }
 
