@@ -1105,6 +1105,48 @@ img.media--photo { object-fit: cover; }
   .line-item > form { grid-row: 1; grid-column: 3; }
 }
 
+/* Repairs ----------------------------------------------------------------- */
+
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; padding: 0 8px; }
+.step { padding: 22px; border-radius: var(--radius); background: var(--cream); }
+.step__num { color: var(--forest); font-family: var(--serif); font-size: 32px; font-style: italic; line-height: 1; }
+.step h3 { margin-top: 12px; font-size: 16px; }
+.step p { margin-top: 4px; color: var(--muted); font-size: 13px; }
+
+.panel--white { border: 1px solid var(--line); background: #fff; }
+.field .hint a { color: var(--forest); font-weight: 600; text-decoration: underline; }
+
+.quote__amount { margin: 8px 0 4px; color: var(--forest); font-family: var(--serif); font-size: 64px; font-style: italic; line-height: 1; }
+.quote__perk { margin-top: 16px; }
+.quote dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 18px 0; font-size: 14px; }
+.quote dt { color: var(--muted); }
+.quote dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.quote .charge-note { margin: 0 0 12px; }
+.quote__clear { margin-top: 14px; text-align: center; }
+
+/* A button that looks like a text link, for minor actions. */
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--forest);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.rate-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rate-table td { padding: 9px 0; border-bottom: 1px solid var(--line); }
+.rate-table td:last-child { font-weight: 600; text-align: right; }
+.rate-table--spaced { margin-top: 14px; }
+
+@media (max-width: 720px) {
+  .steps { grid-template-columns: 1fr; }
+  .quote__amount { font-size: 52px; }
+}
+
 /* Search ------------------------------------------------------------------ */
 
 /* Category filter chips above the results. */
