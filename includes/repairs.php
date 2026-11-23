@@ -99,6 +99,13 @@ function build_repair_quote($conn, $input, $customerId)
         $advance = $full;
     }
 
+    // Card payments have a minimum (about USD 0.50 at Stripe), so a paid
+    // advance is never less than MIN_REPAIR_ADVANCE. Free repairs stay free.
+    $raised = $advance > 0 && $advance < MIN_REPAIR_ADVANCE;
+    if ($raised) {
+        $advance = MIN_REPAIR_ADVANCE;
+    }
+
     return array(array(
         'product'  => $input['product'],
         'category' => $input['category'],
@@ -107,6 +114,7 @@ function build_repair_quote($conn, $input, $customerId)
         'perk'     => $perk,
         'full'     => $full,
         'advance'  => $advance,
+        'minimum'  => $raised,
     ), array());
 }
 

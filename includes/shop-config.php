@@ -94,3 +94,9 @@ $REPAIR_DAMAGE_RATES = array(
     'software corruption' => 20,
     'virus & malware'     => 30,
 );
+
+/**
+ * Smallest advance taken by card. Stripe won't take card payments under
+ * about USD 0.50 (roughly UGX 1,900), so cheaper advances are raised to this.
+ */
+define('MIN_REPAIR_ADVANCE', 3000);

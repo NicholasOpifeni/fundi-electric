@@ -11,6 +11,12 @@ require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/repairs.php';
 require_login();
 
+/**
+ * Set by includes/shop-config.php, which init.php loads.
+ * @var array $REPAIR_CATEGORY_RATES
+ * @var array $REPAIR_DAMAGE_RATES
+ */
+
 $uid    = current_user_id();
 $values = array('product' => '', 'category' => '', 'damage' => '', 'serial' => '');
 $errors = array();
@@ -141,6 +147,9 @@ include __DIR__ . '/includes/headerNav.php';
           Serial accepted: <?php echo $quote['perk'] === 'free' ? 'this repair is free' : '50% off'; ?>.
           Usual advance <?php echo e(money($quote['full'])); ?>.
         </div>
+      <?php } ?>
+      <?php if (!empty($quote['minimum'])) { ?>
+        <p class="charge-note">The smallest advance we can take by card is <?php echo e(base_money(MIN_REPAIR_ADVANCE)); ?>.</p>
       <?php } ?>
 
       <dl>
