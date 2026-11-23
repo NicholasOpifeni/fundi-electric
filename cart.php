@@ -168,6 +168,7 @@ include __DIR__ . '/includes/headerNav.php';
       <a class="btn btn--ghost btn--lg" href="index.php#shop">Continue shopping</a>
     </div>
 
+    <p class="summary-note"><?php echo icon('truck'); ?> <span>Delivering to <?php echo e($customer['customer_address']); ?> · <a href="profile.php#details">Change</a></span></p>
     <p class="summary-note"><?php echo icon('tool'); ?> Each item comes with a serial code for discounted repairs.</p>
   </aside>
 </div>
