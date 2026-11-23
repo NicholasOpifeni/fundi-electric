@@ -1092,6 +1092,10 @@ img.media--photo { object-fit: cover; }
 .summary-row--total { margin-top: 6px; padding-top: 16px; border-top: 1px solid var(--line-strong); font-size: 20px; font-weight: 700; }
 .summary-actions { display: grid; gap: 10px; margin-top: 20px; }
 .summary-note { display: flex; gap: 8px; margin-top: 16px; color: var(--muted); font-size: 12px; }
+
+/* Shown when prices are converted: the exact UGX amount that will be charged. */
+.charge-note { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.charge-note strong { color: var(--ink); }
 .summary-note .icon { width: 16px; height: 16px; }
 
 @media (max-width: 720px) {

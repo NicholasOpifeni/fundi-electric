@@ -77,6 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $isAdmin = $customer['customer_role'] === 'admin';
 
 // Each order with the latest repair serial issued for that product to this customer.
+// Order and repair amounts below stay in UGX, unlike shop prices: they are what
+// was actually charged, and a conversion at today's rate wouldn't match the
+// customer's bank statement.
 $orders = db_all(
     $conn,
     'SELECT s.sid, s.pid, s.quantity, s.price, s.date, s.status, p.product_title, p.product_img,

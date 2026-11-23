@@ -76,7 +76,10 @@ include __DIR__ . '/includes/headerNav.php';
 
     <p class="pdp__desc"><?php echo nl2br(e(trim($product['product_desc']))); ?></p>
 
-    <p class="pdp__price"><?php echo e(base_money($price)); ?><small>+ <?php echo e(base_money(SHIPPING_FEE)); ?> delivery</small></p>
+    <p class="pdp__price"><?php echo e(money($price)); ?><small>+ <?php echo e(money(SHIPPING_FEE)); ?> delivery</small></p>
+    <?php if (showing_converted_prices()) { ?>
+      <p class="charge-note">Estimated at today’s rate. You pay <?php echo e(base_money($price)); ?> plus <?php echo e(base_money(SHIPPING_FEE)); ?> delivery.</p>
+    <?php } ?>
 
     <div class="perk">
       <?php echo icon('tool'); ?>
@@ -108,7 +111,7 @@ include __DIR__ . '/includes/headerNav.php';
     <?php } ?>
 
     <ul class="assurances">
-      <li><?php echo icon('truck'); ?> Flat <?php echo e(base_money(SHIPPING_FEE)); ?> delivery to your saved address</li>
+      <li><?php echo icon('truck'); ?> Flat <?php echo e(money(SHIPPING_FEE)); ?> delivery to your saved address</li>
       <li><?php echo icon('card'); ?> Secure card payment through Stripe</li>
       <li><?php echo icon('shield'); ?> Genuine product with its own repair serial</li>
     </ul>

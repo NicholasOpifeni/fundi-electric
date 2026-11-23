@@ -151,7 +151,7 @@ include __DIR__ . '/includes/headerNav.php';
   <div class="bestsellers__intro">
     <p class="eyebrow"><?php echo $hasSales ? 'Loved by our customers' : 'Editor’s picks'; ?></p>
     <h2 class="display">Best <em>sellers</em></h2>
-    <p class="muted">The devices people keep coming back for. Anything over <?php echo e(base_money(FREE_REPAIR_THRESHOLD)); ?> also earns a free repair.</p>
+    <p class="muted">The devices people keep coming back for. Anything over <?php echo e(money(FREE_REPAIR_THRESHOLD)); ?> also earns a free repair.</p>
 
     <ol class="rank-list">
       <?php foreach ($bestSellers as $i => $product) {
@@ -166,7 +166,7 @@ include __DIR__ . '/includes/headerNav.php';
               <?php echo e(trim($product['product_title'])); ?>
               <small><?php echo $hasSales ? (int) $product['sold'] . ' sold' : e(ucfirst(product_category($product))); ?></small>
             </span>
-            <span class="rank-list__price"><?php echo e(base_money($product['product_price'])); ?></span>
+            <span class="rank-list__price"><?php echo e(money($product['product_price'])); ?></span>
           </a>
         </li>
       <?php } ?>
@@ -183,7 +183,7 @@ include __DIR__ . '/includes/headerNav.php';
     <span class="bestsellers__tag glass">
       <small>No. 1 pick</small>
       <strong><?php echo e(trim($topPick['product_title'])); ?></strong>
-      <span><?php echo e(base_money($topPick['product_price'])); ?></span>
+      <span><?php echo e(money($topPick['product_price'])); ?></span>
     </span>
   </a>
 </section>

@@ -38,7 +38,7 @@ function render_product_card($product, $isNewest = false)
         <h3 class="card__title"><a href="<?php echo e($link); ?>"><?php echo e($title); ?></a></h3>
         <p class="card__desc"><?php echo e(short_text($product['product_desc'], 70)); ?></p>
         <div class="card__foot">
-          <span class="price"><?php echo e(base_money($product['product_price'])); ?></span>
+          <span class="price"><?php echo e(money($product['product_price'])); ?></span>
           <form action="cart-add.php" method="post">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="pid" value="<?php echo $id; ?>">

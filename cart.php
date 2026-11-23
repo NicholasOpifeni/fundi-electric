@@ -119,7 +119,7 @@ include __DIR__ . '/includes/headerNav.php';
         <div>
           <p class="line-item__name"><a href="<?php echo e($link); ?>"><?php echo e($name); ?></a></p>
           <?php if ($buyable) { ?>
-            <p class="line-item__sub"><?php echo e(ucfirst(product_category($line))); ?> · <?php echo e(base_money($line['product_price'])); ?> each</p>
+            <p class="line-item__sub"><?php echo e(ucfirst(product_category($line))); ?> · <?php echo e(money($line['product_price'])); ?> each</p>
             <form class="qty-form" method="post" action="cart.php">
               <?php echo csrf_field(); ?>
               <input type="hidden" name="sid" value="<?php echo $sid; ?>">
@@ -139,7 +139,7 @@ include __DIR__ . '/includes/headerNav.php';
           <?php } ?>
         </div>
 
-        <p class="line-item__total"><?php echo $buyable ? e(base_money((int) $line['product_price'] * (int) $line['quantity'])) : '—'; ?></p>
+        <p class="line-item__total"><?php echo $buyable ? e(money((int) $line['product_price'] * (int) $line['quantity'])) : '—'; ?></p>
 
         <form method="post" action="cart.php">
           <?php echo csrf_field(); ?>
@@ -152,9 +152,12 @@ include __DIR__ . '/includes/headerNav.php';
 
   <aside class="panel sticky">
     <h2 class="panel__title">Order <em>summary</em></h2>
-    <div class="summary-row"><span>Subtotal (<?php echo $itemCount; ?> item<?php echo $itemCount === 1 ? '' : 's'; ?>)</span><span><?php echo e(base_money($subtotal)); ?></span></div>
-    <div class="summary-row"><span>Delivery</span><span><?php echo e(base_money($shipping)); ?></span></div>
-    <div class="summary-row summary-row--total"><span>Total</span><span><?php echo e(base_money($total)); ?></span></div>
+    <div class="summary-row"><span>Subtotal (<?php echo $itemCount; ?> item<?php echo $itemCount === 1 ? '' : 's'; ?>)</span><span><?php echo e(money($subtotal)); ?></span></div>
+    <div class="summary-row"><span>Delivery</span><span><?php echo e(money($shipping)); ?></span></div>
+    <div class="summary-row summary-row--total"><span>Total</span><span><?php echo e(money($total)); ?></span></div>
+    <?php if (showing_converted_prices() && $itemCount > 0) { ?>
+      <p class="charge-note">Prices in <?php echo e(display_currency()); ?> are estimates at today’s rate. You’ll be charged exactly <strong><?php echo e(base_money($total)); ?></strong>.</p>
+    <?php } ?>
 
     <div class="summary-actions">
       <form action="checkout.php" method="post">
