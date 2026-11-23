@@ -66,7 +66,7 @@ CREATE TABLE `carts` (
   PRIMARY KEY (`sid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- One row per item sold.
+-- One row per product in a paid order. payment_id links it to the payments table.
 CREATE TABLE `soldproducts` (
   `sid` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
@@ -75,10 +75,13 @@ CREATE TABLE `soldproducts` (
   `price` int(11) NOT NULL,
   `date` varchar(60) DEFAULT NULL,
   `status` enum('pending','delivered') NOT NULL DEFAULT 'pending',
-  PRIMARY KEY (`sid`)
+  `payment_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`sid`),
+  KEY `payment_id` (`payment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Repair serial issued with every purchase, and the discount it unlocks.
+-- Repair serials: one for each item bought, with the discount it unlocks.
+-- status is 'pending' until the serial is used for a repair, then 'used'.
 CREATE TABLE `servicestatus` (
   `sid` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) DEFAULT NULL,
@@ -86,7 +89,9 @@ CREATE TABLE `servicestatus` (
   `status` varchar(20) NOT NULL DEFAULT 'pending',
   `pid` int(11) DEFAULT NULL,
   `uuid` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`sid`)
+  `payment_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`sid`),
+  KEY `payment_id` (`payment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Repair bookings.

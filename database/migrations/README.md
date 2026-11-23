@@ -18,3 +18,4 @@ Or open the database in phpMyAdmin, go to **Import** and choose the file.
 | --- | --- |
 | `001_hash_starter_admin_password.sql` | Stores the starter admin's password as a bcrypt hash |
 | `002_add_payments_table.sql` | Adds the `payments` table for Stripe Checkout |
+| `003_link_orders_to_payments.sql` | Links orders and repair serials to their payment (run once) |
