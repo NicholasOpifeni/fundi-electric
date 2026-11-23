@@ -138,6 +138,19 @@ function safe_back_url($fallback = 'index.php')
     return $refererHost === $ownHost ? $referer : $fallback;
 }
 
+/**
+ * Full URL of a page in the shop's folder, for links that leave the site
+ * and come back (Stripe's return pages): site_url('cart.php') gives
+ * http://localhost:8888/cart.php on MAMP.
+ */
+function site_url($path)
+{
+    $https  = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    $host   = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+    $folder = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+    return ($https ? 'https' : 'http') . '://' . $host . $folder . '/' . ltrim($path, '/');
+}
+
 /* Database ---------------------------------------------------------------- */
 
 /**
