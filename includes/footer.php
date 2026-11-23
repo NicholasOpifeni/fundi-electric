@@ -8,6 +8,7 @@
  * Set by includes/init.php before the page includes this file.
  * @var array $site
  * @var array $SHOP_SOCIAL
+ * @var array $SWITCHER_CURRENCIES
  */
 
 // The settings table stores the footer note as HTML with <br> line breaks.
@@ -18,6 +19,15 @@ $footerNote = trim(preg_replace('/\s+/u', ' ', $footerNote));
 
 $socialLinks  = array_filter($SHOP_SOCIAL);
 $socialLabels = array('facebook' => 'Facebook', 'x' => 'X (Twitter)', 'youtube' => 'YouTube');
+
+// Currency switcher: the shop's currency, the visitor's own and the usual
+// list, keeping only those we have a rate for.
+$chosenCurrency   = chosen_currency();
+$detectedCurrency = detected_currency();
+$currencyOptions  = array_values(array_filter(
+    array_unique(array_merge(array(BASE_CURRENCY, $detectedCurrency), $SWITCHER_CURRENCIES)),
+    'currency_supported'
+));
 ?>
 </main>
 
@@ -66,6 +76,20 @@ $socialLabels = array('facebook' => 'Facebook', 'x' => 'X (Twitter)', 'youtube' 
 
   <div class="site-footer__bottom">
     <p><?php echo e($footerNote); ?></p>
+
+    <?php if (count($currencyOptions) > 1) { ?>
+      <form class="currency-switch" action="set-currency.php" method="get">
+        <label for="currency">Prices in</label>
+        <select id="currency" name="currency" data-autosubmit>
+          <option value="auto"<?php echo $chosenCurrency === null ? ' selected' : ''; ?>>Automatic (<?php echo e($detectedCurrency); ?>)</option>
+          <?php foreach ($currencyOptions as $code) { ?>
+            <option value="<?php echo e($code); ?>"<?php echo $code === $chosenCurrency ? ' selected' : ''; ?>><?php echo e($code); ?></option>
+          <?php } ?>
+        </select>
+        <noscript><button type="submit">Set</button></noscript>
+      </form>
+    <?php } ?>
+
     <p class="site-footer__secure"><?php echo icon('card'); ?> Payments secured by Stripe</p>
   </div>
 </footer>

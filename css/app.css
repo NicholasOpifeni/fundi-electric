@@ -1428,6 +1428,30 @@ img.media--photo { object-fit: cover; }
 .site-footer__secure { display: flex; align-items: center; gap: 8px; }
 .site-footer__secure .icon { width: 16px; height: 16px; }
 
+/* "Prices in" currency switcher. */
+.currency-switch { display: flex; align-items: center; gap: 8px; }
+.currency-switch select {
+  height: 32px;
+  padding: 0 28px 0 12px;
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 999px;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23e8e6d8' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 11px center;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  appearance: none;
+  cursor: pointer;
+}
+.currency-switch option { color: var(--ink); }
+.currency-switch button {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+}
+
 @media (max-width: 1100px) {
   .site-footer__top { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); }
   .site-footer__brand { grid-column: 1 / -1; }
