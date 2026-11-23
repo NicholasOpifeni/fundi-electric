@@ -1404,6 +1404,11 @@ img.media--photo { object-fit: cover; }
 .table .thumb.media--cutout img { padding: 5px; }
 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; white-space: nowrap; }
 
+/* Repair serials in order history: one chip per item, crossed out once used. */
+.table td.serials { min-width: 150px; white-space: normal; }
+.table .serial { background: var(--card); }
+.serial--used { color: var(--muted); text-decoration: line-through; }
+
 /* Order and repair status. */
 .pill--pending { background: var(--butter); color: #6a5a12; }
 .pill--delivered,

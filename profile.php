@@ -76,21 +76,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $isAdmin = $customer['customer_role'] === 'admin';
 
-// Each order with the latest repair serial issued for that product to this customer.
 // Order and repair amounts below stay in UGX, unlike shop prices: they are what
 // was actually charged, and a conversion at today's rate wouldn't match the
 // customer's bank statement.
 $orders = db_all(
     $conn,
-    'SELECT s.sid, s.pid, s.quantity, s.price, s.date, s.status, p.product_title, p.product_img,
-            (SELECT ss.uuid FROM servicestatus ss WHERE ss.uid = s.uid AND ss.pid = s.pid ORDER BY ss.sid DESC LIMIT 1) AS serial,
-            (SELECT ss.status FROM servicestatus ss WHERE ss.uid = s.uid AND ss.pid = s.pid ORDER BY ss.sid DESC LIMIT 1) AS serial_status
+    'SELECT s.sid, s.pid, s.quantity, s.price, s.date, s.status, s.payment_id, p.product_title, p.product_img
        FROM soldproducts s LEFT JOIN products p ON p.product_id = s.pid
       WHERE s.uid = ?
       ORDER BY s.sid DESC',
     'i',
     array($uid)
 );
+
+// Repair serials for each order line: the ones issued with that payment, one per
+// item. Orders from before card payments have no payment_id, so they show the
+// serials issued for that product without one.
+$serials = array();
+foreach (db_all($conn, 'SELECT pid, payment_id, uuid, status FROM servicestatus WHERE uid = ? ORDER BY sid', 'i', array($uid)) as $row) {
+    $serials[$row['payment_id'] . ':' . $row['pid']][] = $row;
+}
 
 $repairs = db_all($conn, 'SELECT * FROM repair WHERE user_id = ? ORDER BY id DESC', 'i', array($uid));
 
@@ -227,7 +232,7 @@ include __DIR__ . '/includes/headerNav.php';
             <thead>
               <tr>
                 <th><span class="sr-only">Photo</span></th><th>Product</th><th>Price</th><th>Qty</th>
-                <th>Repair serial</th><th>Date</th><th>Status</th>
+                <th>Repair serials</th><th>Date</th><th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -248,13 +253,13 @@ include __DIR__ . '/includes/headerNav.php';
                   </td>
                   <td><?php echo e(base_money($order['price'])); ?></td>
                   <td><?php echo (int) $order['quantity']; ?></td>
-                  <td class="mono">
-                    <?php if ($order['serial'] === null) { ?>
+                  <td class="serials">
+                    <?php $lineSerials = isset($serials[$order['payment_id'] . ':' . $order['pid']]) ? $serials[$order['payment_id'] . ':' . $order['pid']] : array(); ?>
+                    <?php if (!$lineSerials) { ?>
                       —
-                    <?php } elseif ($order['serial_status'] !== 'pending') { ?>
-                      Used
-                    <?php } else { ?>
-                      <?php echo e($order['serial']); ?>
+                    <?php } ?>
+                    <?php foreach ($lineSerials as $serial) { ?>
+                      <span class="mono serial<?php echo $serial['status'] === 'pending' ? '' : ' serial--used'; ?>"><?php echo e($serial['uuid']); ?><?php echo $serial['status'] === 'pending' ? '' : ' · used'; ?></span>
                     <?php } ?>
                   </td>
                   <td><?php echo e($order['date']); ?></td>
