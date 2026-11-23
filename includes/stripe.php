@@ -24,6 +24,51 @@ function stripe_configured()
         && STRIPE_SECRET_KEY !== 'sk_test_replace_with_your_key';
 }
 
+/** True once a webhook signing secret (not the example placeholder) is set in secrets.php. */
+function stripe_webhook_configured()
+{
+    return defined('STRIPE_WEBHOOK_SECRET')
+        && strpos(STRIPE_WEBHOOK_SECRET, 'whsec_') === 0
+        && STRIPE_WEBHOOK_SECRET !== 'whsec_replace_with_your_secret';
+}
+
+/**
+ * Check a webhook's Stripe-Signature header and return the event, or null.
+ *
+ * Stripe signs "timestamp.payload" with the endpoint's signing secret
+ * (HMAC-SHA256) and sends t=<timestamp>,v1=<signature>. Events more than five
+ * minutes old are refused, so a captured one can't be replayed later.
+ * https://docs.stripe.com/webhooks#verify-manually
+ */
+function stripe_webhook_event($payload, $header, $secret, $tolerance = 300)
+{
+    $timestamp  = 0;
+    $signatures = array();
+    foreach (explode(',', (string) $header) as $part) {
+        $pair = explode('=', trim($part), 2);
+        if (count($pair) !== 2) {
+            continue;
+        }
+        if ($pair[0] === 't') {
+            $timestamp = (int) $pair[1];
+        } elseif ($pair[0] === 'v1') {
+            $signatures[] = $pair[1];
+        }
+    }
+    if ($timestamp === 0 || !$signatures || abs(time() - $timestamp) > $tolerance) {
+        return null;
+    }
+
+    $expected = hash_hmac('sha256', $timestamp . '.' . $payload, $secret);
+    foreach ($signatures as $signature) {
+        if (hash_equals($expected, $signature)) {
+            $event = json_decode($payload, true);
+            return is_array($event) && isset($event['type'], $event['data']['object']) ? $event : null;
+        }
+    }
+    return null;
+}
+
 /**
  * An amount in BASE_CURRENCY in the units Stripe's API expects.
  *
