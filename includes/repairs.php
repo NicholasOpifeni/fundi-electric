@@ -7,11 +7,11 @@
  * halves it, or makes the repair free for products priced over
  * FREE_REPAIR_THRESHOLD. The serial must be for the same kind of device.
  *
- * Each serial works once. book_repair() marks it used in the same database
- * transaction that saves the booking, and only if it is still unused, so two
- * bookings can never share a serial, even when both are sent at once.
+ * Each serial works once. It is marked used in the same database transaction
+ * that saves the booking, and only if it is still unused, so two bookings can
+ * never share a serial, even when both are sent at once.
  *
- * Loaded by repair.php, and by checkout once paid repairs are booked there.
+ * Loaded by repair.php, checkout.php and includes/orders.php.
  */
 
 /** servicestatus.discount values, in the format the original shop stored them. */
@@ -119,31 +119,26 @@ function build_repair_quote($conn, $input, $customerId)
 }
 
 /**
- * Save a repair booking from a quote, using up its serial if it has one.
- * Returns '' on success, or a message when the serial was used in the
- * meantime (then nothing is saved).
+ * Mark a serial used, but only if it is still unused. InnoDB locks the row,
+ * so when two bookings race for the same serial the second finds it already
+ * used. Returns true if this call used it up.
  */
-function book_repair($conn, $customerId, $quote)
+function claim_repair_serial($conn, $serial, $customerId)
 {
-    $conn->begin_transaction();
+    $claimed = db_exec(
+        $conn,
+        "UPDATE servicestatus SET status = 'used'
+          WHERE uuid = ? AND uid = ? AND status = 'pending'
+          ORDER BY sid LIMIT 1",
+        'si',
+        array($serial, (int) $customerId)
+    );
+    return $claimed === 1;
+}
 
-    if ($quote['serial'] !== '') {
-        // Only an unused serial is updated; InnoDB locks the row, so a second
-        // booking racing this one finds it already used and changes nothing.
-        $claimed = db_exec(
-            $conn,
-            "UPDATE servicestatus SET status = 'used'
-              WHERE uuid = ? AND uid = ? AND status = 'pending'
-              ORDER BY sid LIMIT 1",
-            'si',
-            array($quote['serial'], (int) $customerId)
-        );
-        if ($claimed !== 1) {
-            $conn->rollback();
-            return 'That serial has already been used for a repair, so this booking wasn’t made. Please get a new quote.';
-        }
-    }
-
+/** Insert the repair booking itself. Callers handle the transaction. */
+function save_repair_booking($conn, $customerId, $quote)
+{
     db_exec(
         $conn,
         'INSERT INTO repair (user_id, p_name, category, damage_type, uuid, advance_amt, booked_date)
@@ -159,7 +154,21 @@ function book_repair($conn, $customerId, $quote)
             date('j M Y'),
         )
     );
+}
 
+/**
+ * Book a free repair from a quote, using up its serial. Returns '' on
+ * success, or a message when the serial was used in the meantime (then
+ * nothing is saved). Paid repairs are booked by record_payment() instead.
+ */
+function book_repair($conn, $customerId, $quote)
+{
+    $conn->begin_transaction();
+    if ($quote['serial'] !== '' && !claim_repair_serial($conn, $quote['serial'], $customerId)) {
+        $conn->rollback();
+        return 'That serial has already been used for a repair, so this booking wasn’t made. Please get a new quote.';
+    }
+    save_repair_booking($conn, $customerId, $quote);
     $conn->commit();
     return '';
 }
