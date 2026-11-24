@@ -75,7 +75,9 @@ include __DIR__ . '/includes/headerNav.php';
 ?>
 
 <section class="auth">
-  <div class="auth__visual">
+  <?php $photo = site_image('login'); ?>
+  <div class="auth__visual<?php echo $photo !== '' ? ' auth__visual--photo' : ''; ?>">
+    <?php if ($photo !== '') { ?><img class="auth__photo" src="<?php echo e($photo); ?>" alt=""><?php } ?>
     <h2>Good to see you <em>again</em></h2>
     <ul>
       <li><?php echo icon('check'); ?> Track your orders and deliveries</li>

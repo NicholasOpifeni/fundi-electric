@@ -1161,6 +1161,10 @@ img.media--photo { object-fit: cover; }
 
 /* Repairs ----------------------------------------------------------------- */
 
+/* Optional banner photo (images/site/repair.jpg). */
+.photo-banner { height: 320px; margin: 0 8px 28px; overflow: hidden; border-radius: var(--radius); }
+.photo-banner img { width: 100%; height: 100%; object-fit: cover; }
+
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; padding: 0 8px; }
 .step { padding: 22px; border-radius: var(--radius); background: var(--cream); }
 .step__num { color: var(--forest); font-family: var(--serif); font-size: 32px; font-style: italic; line-height: 1; }
@@ -1198,6 +1202,7 @@ img.media--photo { object-fit: cover; }
 
 @media (max-width: 720px) {
   .steps { grid-template-columns: 1fr; }
+  .photo-banner { height: 200px; }
   .quote__amount { font-size: 52px; }
 }
 
@@ -1325,6 +1330,15 @@ img.media--photo { object-fit: cover; }
     linear-gradient(160deg, var(--forest) 0%, var(--forest-deep) 65%, #072219 100%);
   color: #fff;
   isolation: isolate;
+}
+/* With a photo (images/site/login.jpg or signup.jpg), darkened towards the text. */
+.auth__photo { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.auth__visual--photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(15deg, rgba(7, 34, 26, .92) 0%, rgba(7, 34, 26, .35) 55%, rgba(7, 34, 26, .1) 100%);
 }
 .auth__visual h2 { font-size: clamp(30px, 3.4vw, 44px); font-weight: 500; letter-spacing: -.03em; }
 .auth__visual h2 em { color: var(--butter); font-size: 1.08em; }

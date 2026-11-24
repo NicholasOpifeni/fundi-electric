@@ -74,6 +74,11 @@ include __DIR__ . '/includes/headerNav.php';
   <p class="muted">Our technicians repair laptops, phones, keyboards and mice. Book online, pay a small advance and bring your device in. Bought it here? Your purchase serial makes the repair cheaper, or free.</p>
 </header>
 
+<?php $repairPhoto = site_image('repair'); ?>
+<?php if ($repairPhoto !== '') { ?>
+  <div class="photo-banner"><img src="<?php echo e($repairPhoto); ?>" alt=""></div>
+<?php } ?>
+
 <div class="steps">
   <div class="step">
     <span class="step__num">01</span>

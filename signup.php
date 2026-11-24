@@ -51,7 +51,9 @@ include __DIR__ . '/includes/headerNav.php';
 ?>
 
 <section class="auth">
-  <div class="auth__visual">
+  <?php $photo = site_image('signup'); ?>
+  <div class="auth__visual<?php echo $photo !== '' ? ' auth__visual--photo' : ''; ?>">
+    <?php if ($photo !== '') { ?><img class="auth__photo" src="<?php echo e($photo); ?>" alt=""><?php } ?>
     <h2>Join the <em>shop</em></h2>
     <ul>
       <li><?php echo icon('check'); ?> Your cart is saved between visits</li>
