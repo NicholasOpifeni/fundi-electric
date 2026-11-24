@@ -25,7 +25,7 @@ INSERT INTO `products` (`product_id`, `product_catag`, `product_title`, `product
 (23, 'laptop', 'Acer Aspire 5 Gaming', 3100000, '15.6-inch laptop with a Core i7, 16GB RAM and RTX 3050 graphics. Handles editing and gaming.', '20, Sep 2026', 'acer-aspire-5.jpg', 9, 'nathan'),
 (24, 'mobile', 'Samsung Galaxy A15', 950000, '6.5-inch Super AMOLED screen, 128GB storage, 50MP main camera and a 5000mAh battery that lasts the day.', '20, Sep 2026', 'samsung-galaxy-a15.jpg', 25, 'nathan'),
 (25, 'mobile', 'Tecno Spark 20', 620000, 'Big 6.6-inch display, 128GB storage and 32MP selfie camera. Popular, affordable and easy to service.', '20, Sep 2026', 'tecno-spark-20.jpg', 40, 'nathan'),
-(26, 'mobile', 'Apple iPhone 18 Pro Max', 3450000, '6.9-inch ProMotion display, A20 Pro chip and 1TB storage. 48MP main camera with a variable aperture.', '20, Sep 2026', 'iphone-18-pro-max.jpg', 6, 'nathan'),
+(26, 'mobile', 'Apple iPhone 18 Pro Max', 6500000, '6.9-inch ProMotion display, A20 Pro chip and 1TB storage. 48MP main camera with a variable aperture.', '20, Sep 2026', 'iphone-18-pro-max.jpg', 6, 'nathan'),
 (27, 'mobile', 'Infinix Hot 40i', 560000, '90Hz display, 128GB storage and a 5000mAh battery with 18W fast charging. Good value for a first smartphone.', '20, Sep 2026', 'infinix-hot-40i.jpg', 30, 'nathan'),
 (28, 'mobile', 'Xiaomi Redmi Note 13', 1150000, '120Hz AMOLED display, 108MP camera and 256GB storage. Fast charging at 33W.', '20, Sep 2026', 'redmi-note-13.jpg', 18, 'nathan'),
 (29, 'keyboard', 'Logitech K380 Bluetooth', 185000, 'Compact wireless keyboard that pairs with three devices at once. Runs two years on a pair of AA batteries.', '20, Sep 2026', 'logitech-k380.jpg', 22, 'nathan'),
