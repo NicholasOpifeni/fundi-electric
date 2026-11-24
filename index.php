@@ -61,7 +61,9 @@ include __DIR__ . '/includes/headerNav.php';
 ?>
 
 <!-- Hero ================================================================== -->
-<section class="hero">
+<?php $heroPhoto = site_image('hero'); ?>
+<section class="hero<?php echo $heroPhoto !== '' ? ' hero--photo' : ''; ?>">
+  <?php if ($heroPhoto !== '') { ?><img class="hero__photo" src="<?php echo e($heroPhoto); ?>" alt=""><?php } ?>
   <div class="hero__content">
     <h1 class="hero__title">Everyday <em>electronics</em> for a smarter home</h1>
     <p class="hero__lead">Laptops, phones, keyboards and mice from brands you trust. Every order comes with a serial code that unlocks discounted repairs at our service desk.</p>
@@ -97,7 +99,9 @@ include __DIR__ . '/includes/headerNav.php';
 </section>
 
 <!-- Story banner ========================================================== -->
-<section class="story">
+<?php $storyPhoto = site_image('story'); ?>
+<section class="story<?php echo $storyPhoto !== '' ? ' story--photo' : ''; ?>">
+  <?php if ($storyPhoto !== '') { ?><img class="story__photo" src="<?php echo e($storyPhoto); ?>" alt="" loading="lazy"><?php } ?>
   <p class="story__text">
     We stock <em>electronics</em> you can count on for years to come, through late-night work, weekend <em>gaming</em> and everything in between. Each device is <em>checked, serialised</em> and backed by our own repair desk.
   </p>

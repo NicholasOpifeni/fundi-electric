@@ -93,6 +93,8 @@ $flashType = ($flash && in_array($flash['type'], array('success', 'error', 'info
 </svg>
 
 <div class="page">
+<?php // Behind the home page's frame: the hero photo again, blurred and faded out. ?>
+<?php if ($overlay && site_image('hero') !== '') { ?><img class="page-backdrop" src="<?php echo e(site_image('hero')); ?>" alt=""><?php } ?>
 <div class="frame">
 
 <header class="site-header<?php echo $overlay ? ' site-header--overlay' : ''; ?>">
