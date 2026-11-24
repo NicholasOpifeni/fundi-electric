@@ -399,6 +399,20 @@ function product_category($product)
     return strtolower(trim((string) $product['product_catag']));
 }
 
+/**
+ * Web path to one of the site photos in $SITE_IMAGES (shop-config.php), or ''
+ * until the file exists. The path changes when the file does, so browsers
+ * fetch a replaced photo instead of showing a cached one.
+ */
+function site_image($key)
+{
+    global $SITE_IMAGES;
+    if (!isset($SITE_IMAGES[$key]) || !is_file(__DIR__ . '/../' . $SITE_IMAGES[$key])) {
+        return '';
+    }
+    return asset_version($SITE_IMAGES[$key]);
+}
+
 /** Plural label for a category, e.g. "Laptops". "mouse" becomes "Mice", not "Mouses". */
 function category_plural($category)
 {

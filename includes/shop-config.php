@@ -61,6 +61,21 @@ $SHOP_CONTACT = array(
     'hours'   => array('Monday – Saturday, 9:00am – 6:00pm', 'Closed on Sundays and public holidays'),
 );
 
+/* Site photos ------------------------------------------------------------- */
+
+/**
+ * Photos used around the site. Save your own at these paths; see
+ * images/site/README.md for sizes and what to shoot. Until a file is there,
+ * that spot shows the green gradient instead (the repair banner is hidden).
+ */
+$SITE_IMAGES = array(
+    'hero'   => 'images/site/hero.jpg',
+    'story'  => 'images/site/story.jpg',
+    'login'  => 'images/site/login.jpg',
+    'signup' => 'images/site/signup.jpg',
+    'repair' => 'images/site/repair.jpg',
+);
+
 /* Social links ------------------------------------------------------------ */
 
 /**
